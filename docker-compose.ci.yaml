@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    volumes:
+      - boilerplate-db:/var/lib/postgresql/data
+    expose:
+      - ${DATABASE_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+
+  maildev:
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    expose:
+      - 1080
+      - 1025
+
+
+
+  api:
+    build:
+      context: .
+      dockerfile: e2e.Dockerfile
+
+
+volumes:
+  boilerplate-db:

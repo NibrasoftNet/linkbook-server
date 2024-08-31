@@ -1,0 +1,12 @@
+{
+  "emailAlreadyExists": "E-mail déjà utilisé",
+  "emailNotExists": "E-mail introuvable",
+  "imageNotExists": "L'image n'existe pas",
+  "phoneAlreadyExists": "Le numéro de téléphone est déjà utilisé",
+  "storeCodeAlreadyExists": "Le code est déjà utilisé",
+  "storeNotExists": "Le magasin n'existe pas",
+  "categoryNotExists": "La catégorie n'existe pas",
+  "productNotExists": "Le produit n'existe pas",
+  "roleNotExists": "Le role n'existe pas",
+  "statusNotExists": "Le statut n'existe pas"
+}
