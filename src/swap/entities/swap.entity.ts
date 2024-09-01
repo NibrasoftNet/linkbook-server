@@ -54,7 +54,7 @@ export class Swap extends EntityHelper {
   @JoinColumn()
   product: Product;
 
-  @AutoMap()
+  @AutoMap(() => [ApplicantToSwap])
   @OneToMany(
     () => ApplicantToSwap,
     (applicantToSwap) => applicantToSwap.applicant,

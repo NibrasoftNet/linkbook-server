@@ -119,7 +119,7 @@ export class SwapController {
   @ApiPaginationQuery(swapPaginationConfig)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
-  @Get('list/_me')
+  @Get('list/others')
   @HttpCode(HttpStatus.OK)
   async findAllOthers(
     @Request() request,
@@ -132,7 +132,7 @@ export class SwapController {
   @ApiPaginationQuery(swapPaginationConfig)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
-  @Get('list/_me')
+  @Get('list-requested/_me')
   @HttpCode(HttpStatus.OK)
   async findAllRequestMe(
     @Request() request,

@@ -1,5 +1,6 @@
 export enum SwapStatusEnum {
   PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
-  APPROVED = 'APPROVED',
+  CANCELLED = 'CANCELLED',
 }

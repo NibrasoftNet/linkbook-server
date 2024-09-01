@@ -48,8 +48,12 @@ export class ApplicantToDonationService {
     return await this.applicantToDonationRepository.save(applicant);
   }
 
-  findAll() {
-    return `This action returns all applicantToDonation`;
+  async findAll(query: PaginateQuery) {
+    return await paginate(
+      query,
+      this.applicantToDonationRepository,
+      applicantToDonationPaginationConfig,
+    );
   }
 
   async findAllMe(userJwtPayload: JwtPayloadType, query: PaginateQuery) {
@@ -127,11 +131,13 @@ export class ApplicantToDonationService {
     return await this.applicantToDonationRepository.save(applicant);
   }
 
-  update(
-    id: number,
+  async update(
+    id: string,
     updateApplicantToDonationDto: UpdateApplicantToDonationDto,
   ) {
-    return `This action updates a #${id} + ${updateApplicantToDonationDto} applicantToDonation`;
+    const applicant = await this.findOneOrFail({ id });
+    Object.assign(applicant, updateApplicantToDonationDto);
+    return await this.applicantToDonationRepository.save(applicant);
   }
 
   async cancelMyRequest(id: string, userJwtPayload: JwtPayloadType) {
@@ -143,7 +149,7 @@ export class ApplicantToDonationService {
     return await this.applicantToDonationRepository.save(applicant);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} applicantToDonation`;
+  async remove(id: string) {
+    return await this.applicantToDonationRepository.delete(id);
   }
 }

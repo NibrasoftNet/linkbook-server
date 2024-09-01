@@ -8,6 +8,7 @@ export const swapPaginationConfig: PaginateConfig<Swap> = {
     'creator.photo',
     'product',
     'product.category',
+    'product.image',
     'applicants',
     'applicants.applicant',
     'address',

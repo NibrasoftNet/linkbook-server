@@ -29,6 +29,7 @@ import { ApiPaginationQuery, Paginate, PaginateQuery } from 'nestjs-paginate';
 import { donationPaginationConfig } from '../donation/config/donation-pagination-config';
 import { PaginatedDto } from '../utils/serialization/paginated.dto';
 import { HttpResponseException } from '../utils/exceptions/http-response.exception';
+import { applicantToDonationPaginationConfig } from './config/applicant-to-donation-pagination-config';
 
 @ApiBearerAuth()
 @ApiTags('Applicant-to-donation')
@@ -44,20 +45,17 @@ export class ApplicantToDonationController {
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Post(':id')
   async create(@Request() request, @Param('id', ParseIntPipe) id: number) {
-    try {
-      return await this.applicantToDonationService.create(id, request.user);
-    } catch (error) {
-      throw new HttpResponseException(error);
-    }
+    return await this.applicantToDonationService.create(id, request.user);
   }
 
+  @ApiPaginationQuery(applicantToDonationPaginationConfig)
   @Roles(RoleEnum.ADMIN, RoleEnum.USER)
   @Get()
-  findAll() {
-    return this.applicantToDonationService.findAll();
+  async findAll(@Paginate() query: PaginateQuery) {
+    return await this.applicantToDonationService.findAll(query);
   }
 
-  @ApiPaginationQuery(donationPaginationConfig)
+  @ApiPaginationQuery(applicantToDonationPaginationConfig)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Get('list/_me')
   @HttpCode(HttpStatus.OK)
@@ -101,12 +99,12 @@ export class ApplicantToDonationController {
 
   @Patch(':id')
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateApplicantToDonationDto: UpdateApplicantToDonationDto,
   ) {
-    return this.applicantToDonationService.update(
-      +id,
+    return await this.applicantToDonationService.update(
+      id,
       updateApplicantToDonationDto,
     );
   }
@@ -126,7 +124,7 @@ export class ApplicantToDonationController {
 
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.applicantToDonationService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.applicantToDonationService.remove(id);
   }
 }
