@@ -17,8 +17,8 @@ import { donationPaginationConfig } from './config/donation-pagination-config';
 import { AddressService } from '../address/address.service';
 import { CreateProductDto } from '../product/dto/create-product.dto';
 import { ProductTypeEnum } from '../product/enum/product-type.enum';
-import { validateOrReject } from 'class-validator';
 import { NullableType } from '../utils/types/nullable.type';
+import { Utils } from '../utils/utils';
 
 @Injectable()
 export class DonationService {
@@ -42,7 +42,7 @@ export class DonationService {
     });
     const product = new CreateProductDto(createDonationDto.product);
     product.type = ProductTypeEnum.DONATIONS;
-    await validateOrReject(product);
+    await Utils.validateDtoOrFail(product);
     donation.product = await this.productService.create(files, product);
     donation.address = await this.addressService.create(
       createDonationDto.address,

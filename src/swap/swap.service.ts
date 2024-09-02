@@ -16,9 +16,9 @@ import { paginate, PaginateQuery } from 'nestjs-paginate';
 import { swapPaginationConfig } from './config/swap-pagination-config';
 import { CreateProductDto } from '../product/dto/create-product.dto';
 import { ProductTypeEnum } from '../product/enum/product-type.enum';
-import { validateOrReject } from 'class-validator';
 import { AddressService } from '../address/address.service';
 import { NullableType } from '../utils/types/nullable.type';
+import { Utils } from '../utils/utils';
 
 @Injectable()
 export class SwapService {
@@ -40,7 +40,7 @@ export class SwapService {
     });
     const product = new CreateProductDto(createSwapDto.product);
     product.type = ProductTypeEnum.SWAPS;
-    await validateOrReject(product);
+    await Utils.validateDtoOrFail(product);
     swap.product = await this.productService.create(files, product);
     swap.address = await this.addressService.create(createSwapDto.address);
     await this.swapRepository.save(swap);

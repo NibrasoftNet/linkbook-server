@@ -129,7 +129,6 @@ export class UsersService {
       await this.usersRepository.restore(user.id);
       return user;
     }
-
     // Return null if no user was found or the user was not deleted
     return null;
   }

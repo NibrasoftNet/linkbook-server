@@ -37,9 +37,9 @@ import { InjectMapper, MapInterceptor } from 'automapper-nestjs';
 import { Mapper } from 'automapper-core';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ParseFormdataPipe } from '../utils/pipes/parse-formdata.pipe';
-import { validateOrReject } from 'class-validator';
 import { Public } from '../utils/validators/public.decorator';
 import { UpdateDonationDto } from './dto/update-donation.dto';
+import { Utils } from '../utils/utils';
 
 @ApiTags('Donations')
 @ApiBearerAuth()
@@ -82,7 +82,7 @@ export class DonationController {
   ) {
     try {
       const createDonationDto = new CreateDonationDto(data);
-      await validateOrReject(createDonationDto);
+      await Utils.validateDtoOrFail(createDonationDto);
 
       return await this.donationService.create(
         request.user,
@@ -212,7 +212,7 @@ export class DonationController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body('data', ParseFormdataPipe) data) {
     const updateDonationDto = new UpdateDonationDto(data);
-    await validateOrReject(updateDonationDto);
+    await Utils.validateDtoOrFail(updateDonationDto);
     return this.donationService.update(+id, updateDonationDto);
   }
 

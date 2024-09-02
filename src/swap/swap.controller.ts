@@ -38,7 +38,7 @@ import { InjectMapper, MapInterceptor } from 'automapper-nestjs';
 import { Mapper } from 'automapper-core';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ParseFormdataPipe } from '../utils/pipes/parse-formdata.pipe';
-import { validateOrReject } from 'class-validator';
+import { Utils } from '../utils/utils';
 
 @ApiTags('Swaps')
 @ApiBearerAuth()
@@ -80,7 +80,7 @@ export class SwapController {
     @Body('data', ParseFormdataPipe) data,
   ) {
     const createSwapDto = new CreateSwapDto(data);
-    await validateOrReject(createSwapDto);
+    await Utils.validateDtoOrFail(createSwapDto);
     return await this.swapService.create(request.user, files, createSwapDto);
   }
 
@@ -153,7 +153,7 @@ export class SwapController {
     return await this.swapService.findOne(
       { id: +id },
       {
-        applicants: { applicant: true },
+        applicants: { applicant: true, product: { image: true } },
         product: { image: true },
         creator: true,
       },
@@ -167,7 +167,7 @@ export class SwapController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body('data', ParseFormdataPipe) data) {
     const updateSwapDto = new UpdateSwapDto(data);
-    await validateOrReject(updateSwapDto);
+    await Utils.validateDtoOrFail(updateSwapDto);
     return this.swapService.update(+id, updateSwapDto);
   }
 

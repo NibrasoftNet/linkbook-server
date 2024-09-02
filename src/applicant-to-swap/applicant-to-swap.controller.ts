@@ -38,10 +38,9 @@ import { UpdateApplicantToSwapDto } from './dto/update-applicant-to-swap.dto';
 import { applicantToSwapPaginationConfig } from './config/applicant-to-swap-pagination-config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ParseFormdataPipe } from '../utils/pipes/parse-formdata.pipe';
-import { validateOrReject } from 'class-validator';
 import { CreateProductDto } from '../product/dto/create-product.dto';
-import { ProductTypeEnum } from '../product/enum/product-type.enum';
 import { CreateApplicantToSwapDto } from './dto/create-applicant-to-swap.dto';
+import { Utils } from '../utils/utils';
 
 @ApiBearerAuth()
 @ApiTags('Applicant-to-swap')
@@ -83,8 +82,7 @@ export class ApplicantToSwapController {
     @Body('data', ParseFormdataPipe) data,
   ) {
     const createApplicantToSwapDto = new CreateApplicantToSwapDto(data);
-    console.log('azerty', data);
-    await validateOrReject(createApplicantToSwapDto);
+    await Utils.validateDtoOrFail(createApplicantToSwapDto);
     return await this.applicantToSwapService.create(
       createApplicantToSwapDto,
       id,

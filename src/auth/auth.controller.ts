@@ -41,7 +41,7 @@ import { AuthNewPasswordDto } from './dto/auth-new-password.dto';
 import { CreateDonationDto } from '../donation/dto/create-donation.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ParseFormdataPipe } from '../utils/pipes/parse-formdata.pipe';
-import { validateOrReject } from 'class-validator';
+import { Utils } from '../utils/utils';
 
 @ApiTags('Auth')
 @Controller({
@@ -203,8 +203,7 @@ export class AuthController {
   ): Promise<NullableType<User>> {
     try {
       const updateUserDto = new AuthUpdateDto(data);
-      console.log('fffff', files);
-      await validateOrReject(updateUserDto);
+      await Utils.validateDtoOrFail(updateUserDto);
       return await this.service.update(request.user, updateUserDto, files);
     } catch (error) {
       throw new HttpResponseException(error);

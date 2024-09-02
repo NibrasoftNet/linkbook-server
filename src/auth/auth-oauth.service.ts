@@ -17,6 +17,7 @@ import { SocialLoginRegisterDto } from '../social/interfaces/social-login-regist
 import { FilesService } from '../files/files.service';
 import { AuthService } from './auth.service';
 import { I18nContext, I18nService } from 'nestjs-i18n';
+import { Utils } from '../utils/utils';
 
 @Injectable()
 export class AuthOauthService {
@@ -59,6 +60,8 @@ export class AuthOauthService {
     newUser.status = status;
     newUser.photo = photo;
     newUser.address = socialData.address;
+
+    await Utils.validateDtoOrFail(newUser);
 
     // Use the restored user if available, otherwise create a new user
     const user = restoredUser

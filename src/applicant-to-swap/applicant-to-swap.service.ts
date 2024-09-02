@@ -20,7 +20,7 @@ import { CreateProductDto } from '../product/dto/create-product.dto';
 import { ProductService } from '../product/product.service';
 import { CreateApplicantToSwapDto } from './dto/create-applicant-to-swap.dto';
 import { ProductTypeEnum } from '../product/enum/product-type.enum';
-import { validateOrReject } from 'class-validator';
+import { Utils } from '../utils/utils';
 
 @Injectable()
 export class ApplicantToSwapService {
@@ -59,7 +59,7 @@ export class ApplicantToSwapService {
     });
     const product = new CreateProductDto(createApplicantToSwapDto.product);
     product.type = ProductTypeEnum.SWAPS;
-    await validateOrReject(product);
+    await Utils.validateDtoOrFail(product);
     applicant.product = await this.productService.create(files, product);
     return await this.applicantToSwapRepository.save(applicant);
   }
