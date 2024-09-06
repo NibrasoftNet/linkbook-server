@@ -14,8 +14,8 @@ export const donationPaginationConfig: PaginateConfig<Donation> = {
   ],
   searchableColumns: ['description'],
   sortableColumns: ['createdAt', 'updatedAt', 'description'],
-  defaultLimit: 50,
-  maxLimit: 100,
+  defaultLimit: 2,
+  maxLimit: 2,
   loadEagerRelations: true,
   filterableColumns: {
     active: [FilterOperator.EQ, FilterSuffix.NOT],
