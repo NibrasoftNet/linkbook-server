@@ -58,6 +58,12 @@ export class ProductController {
     );
   }
 
+  @Get('find/all-products')
+  @HttpCode(HttpStatus.OK)
+  async findAllCities() {
+    return await this.productService.findAllProducts();
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MapInterceptor(Product, ProductDto))

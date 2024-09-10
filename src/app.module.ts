@@ -51,6 +51,7 @@ import { ApplicantToDonationModule } from './applicant-to-donation/applicant-to-
 import { ApplicantToSwapModule } from './applicant-to-swap/applicant-to-swap.module';
 import { SharedModule } from './shared-module/shared-module.module';
 import { Module } from '@nestjs/common';
+import { TestimonialsModule } from './testimonials/testimonials.module';
 
 @Module({
   imports: [
@@ -162,6 +163,7 @@ import { Module } from '@nestjs/common';
     ApplicantToDonationModule,
     ApplicantToSwapModule,
     SharedModule,
+    TestimonialsModule,
   ],
 
   providers: [

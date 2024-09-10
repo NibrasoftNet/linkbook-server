@@ -18,7 +18,7 @@ import {
 import validationOptions from './utils/validation-options';
 import { ResponseInterceptor } from './utils/interceptors/response.interceptor';
 
-const logger = new Logger('Skaners');
+const logger = new Logger('Linkbook-main');
 const whitelist = [
   'http://localhost:3000',
   'http://localhost:3002',

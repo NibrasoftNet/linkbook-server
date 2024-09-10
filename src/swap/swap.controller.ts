@@ -162,6 +162,21 @@ export class SwapController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(MapInterceptor(Swap, SwapDto))
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
+  @Get('product/:id')
+  async findOneByProductId(@Param('id') id: string) {
+    return await this.swapService.findOne(
+      { product: { id: +id } },
+      {
+        applicants: { applicant: true, product: { image: true } },
+        product: { image: true },
+        creator: true,
+      },
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseInterceptors(MapInterceptor(Swap, SwapDto))
   @UseInterceptors(FilesInterceptor('data'))
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Patch(':id')

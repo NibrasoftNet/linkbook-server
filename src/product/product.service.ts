@@ -18,6 +18,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from '../config/config.type';
 import { FilesService } from '../files/files.service';
+import { ProductTypeEnum } from './enum/product-type.enum';
 
 @Injectable()
 export class ProductService {
@@ -60,6 +61,17 @@ export class ProductService {
       this.productRepository,
       productPaginationConfig,
     );
+  }
+
+  async findAllProducts(): Promise<
+    { label: string; value: string; type: ProductTypeEnum }[]
+  > {
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .select(
+        'DISTINCT product.name AS label, product.name AS value, product.type AS type, product.id AS id',
+      )
+      .getRawMany();
   }
 
   async findAllPerStorePaginated(

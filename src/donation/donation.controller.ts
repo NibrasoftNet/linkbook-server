@@ -192,6 +192,24 @@ export class DonationController {
   @UseInterceptors(MapInterceptor(Donation, DonationDto))
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @HttpCode(HttpStatus.OK)
+  @Get('product/:id')
+  async findOneByProductId(@Param('id') id: string) {
+    return await this.donationService.findOneOrFail(
+      {
+        product: { id: +id },
+      },
+      {
+        applicants: { applicant: true },
+        product: { image: true },
+        creator: true,
+      },
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseInterceptors(MapInterceptor(Donation, DonationDto))
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.donationService.findOne(
