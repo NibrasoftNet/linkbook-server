@@ -7,11 +7,11 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthTwitterService } from './auth-twitter.service';
 import { AuthTwitterLoginDto } from './dto/auth-twitter-login.dto';
-import { SocialLoginRegisterDto } from '../social/interfaces/social-login-register.dto';
 import { LoginResponseType } from '../auth/types/login-response.type';
 import { AuthOauthService } from '../auth/auth-oauth.service';
+import { SocialRegisterDto } from '../social/interfaces/social-register.dto';
+import { SocialLoginDto } from '../social/interfaces/social-login.dto';
 
 @ApiTags('Twitter OAuth')
 @Controller({
@@ -19,21 +19,7 @@ import { AuthOauthService } from '../auth/auth-oauth.service';
   version: '1',
 })
 export class AuthTwitterController {
-  constructor(
-    private readonly oAuthService: AuthOauthService,
-    private readonly authTwitterService: AuthTwitterService,
-  ) {}
-
-  @SerializeOptions({
-    groups: ['me'],
-  })
-  @Post('verify')
-  @HttpCode(HttpStatus.OK)
-  async verifyToken(
-    @Body() loginDto: AuthTwitterLoginDto,
-  ): Promise<SocialLoginRegisterDto> {
-    return await this.authTwitterService.getProfileByToken(loginDto);
-  }
+  constructor(private readonly oAuthService: AuthOauthService) {}
 
   @SerializeOptions({
     groups: ['me'],
@@ -41,7 +27,7 @@ export class AuthTwitterController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async validateSocialRegister(
-    @Body() socialData: SocialLoginRegisterDto,
+    @Body() socialData: SocialRegisterDto,
   ): Promise<LoginResponseType> {
     return this.oAuthService.validateSocialRegister('twitter', socialData);
   }
@@ -52,7 +38,7 @@ export class AuthTwitterController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async validateSocialLogin(
-    @Body() socialData: SocialLoginRegisterDto,
+    @Body() socialData: SocialLoginDto,
   ): Promise<LoginResponseType> {
     return this.oAuthService.validateSocialLogin('twitter', socialData);
   }

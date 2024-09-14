@@ -17,6 +17,8 @@ import {
 } from 'typeorm-transactional';
 import validationOptions from './utils/validation-options';
 import { ResponseInterceptor } from './utils/interceptors/response.interceptor';
+import { WinstonLoggerService } from './logger/winston-logger.service';
+import { HttpExceptionFilter } from './utils/exceptions/http-exception.filter';
 
 const logger = new Logger('Linkbook-main');
 const whitelist = [
@@ -72,7 +74,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.useGlobalPipes(new ValidationPipe(validationOptions));
-
+  app.useGlobalFilters(new HttpExceptionFilter(app.get(WinstonLoggerService)));
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector)),
     new ResponseInterceptor(),

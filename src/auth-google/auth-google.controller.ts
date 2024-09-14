@@ -1,10 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGoogleService } from './auth-google.service';
-import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
-import { LoginResponseType } from '../auth/types/login-response.type';
-import { SocialLoginRegisterDto } from '../social/interfaces/social-login-register.dto';
 import { AuthOauthService } from '../auth/auth-oauth.service';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { CurrentUser } from '../auth/decorator/current-user.decorator';
+import { UsersService } from '../users/users.service';
+import { OAuthGoogleResponseDto } from './dto/oAuth-google-response.dto';
+import { SocialRegisterDto } from '../social/interfaces/social-register.dto';
+import { SocialLoginDto } from '../social/interfaces/social-login.dto';
+import { Response } from 'express';
+import { AllConfigType } from '../config/config.type';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Google OAuth')
 @Controller({
@@ -14,38 +19,50 @@ import { AuthOauthService } from '../auth/auth-oauth.service';
 export class AuthGoogleController {
   constructor(
     private readonly oAuthService: AuthOauthService,
-    private readonly authGoogleService: AuthGoogleService,
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
-  @Post('verify')
-  @HttpCode(HttpStatus.OK)
-  async verifyToken(
-    @Body() loginDto: AuthGoogleLoginDto,
-  ): Promise<SocialLoginRegisterDto> {
-    return await this.authGoogleService.getProfileByToken(loginDto);
-  }
+  @Get()
+  @UseGuards(GoogleAuthGuard)
+  loginGoogle() {}
 
-  @Post('register')
-  @HttpCode(HttpStatus.CREATED)
-  async validateSocialRegister(
-    @Body() socialData: SocialLoginRegisterDto,
-  ): Promise<LoginResponseType> {
-    return this.oAuthService.validateSocialRegister('google', socialData);
-  }
-
-  @Post('mobile-register')
-  @HttpCode(HttpStatus.CREATED)
-  async validateSocialMobileRegister(
-    @Body() socialData: SocialLoginRegisterDto,
-  ): Promise<LoginResponseType> {
-    return this.oAuthService.validateSocialMobileRegister('google', socialData);
-  }
-
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  async validateSocialLogin(
-    @Body() socialData: SocialLoginRegisterDto,
-  ): Promise<LoginResponseType> {
-    return this.oAuthService.validateSocialLogin('google', socialData);
+  @Get('callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleCallback(
+    @CurrentUser() user: OAuthGoogleResponseDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const existUser = await this.usersService.findOne({
+      email: user.emails[0].value,
+    });
+    if (!existUser) {
+      const { id, emails, photos, ...filteredUserDetails } = user;
+      const newUser = new SocialRegisterDto({
+        id,
+        email: emails[0].value,
+        photo: photos ? photos[0].value : null,
+        firstName: filteredUserDetails.name.givenName,
+        lastName: filteredUserDetails.name.familyName,
+      });
+      const registeredUser = await this.oAuthService.validateSocialRegister(
+        'google',
+        newUser,
+      );
+      response.redirect(
+        `${this.configService.getOrThrow('app.frontendDomain', { infer: true })}/redirect?token=${registeredUser.token}`,
+      );
+    }
+    const loginDto = new SocialLoginDto({
+      id: user.id,
+      email: user.emails[0].value,
+    });
+    const loggedUser = await this.oAuthService.validateSocialLogin(
+      'google',
+      loginDto,
+    );
+    response.redirect(
+      `${this.configService.getOrThrow('app.frontendDomain', { infer: true })}/redirect?token=${loggedUser.token}`,
+    );
   }
 }

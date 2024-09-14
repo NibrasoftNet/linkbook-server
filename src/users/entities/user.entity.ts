@@ -94,6 +94,10 @@ export class User extends EntityHelper {
   @DeleteDateColumn()
   deletedAt: Date;
 
+  @AutoMap(() => String)
+  @Column({ type: String, nullable: true })
+  notificationsToken?: string | null;
+
   @AutoMap(() => StoreAdmin)
   @OneToMany(() => StoreAdmin, (storeAdmin) => storeAdmin.tenant, {
     eager: true,

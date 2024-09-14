@@ -7,11 +7,10 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthAppleService } from './auth-apple.service';
-import { AuthAppleLoginDto } from './dto/auth-apple-login.dto';
 import { LoginResponseType } from '../auth/types/login-response.type';
 import { AuthOauthService } from '../auth/auth-oauth.service';
-import { SocialLoginRegisterDto } from '../social/interfaces/social-login-register.dto';
+import { SocialRegisterDto } from '../social/interfaces/social-register.dto';
+import { SocialLoginDto } from '../social/interfaces/social-login.dto';
 
 @ApiTags('Apple OAuth')
 @Controller({
@@ -19,29 +18,12 @@ import { SocialLoginRegisterDto } from '../social/interfaces/social-login-regist
   version: '1',
 })
 export class AuthAppleController {
-  constructor(
-    private readonly oAuthService: AuthOauthService,
-    private readonly authAppleService: AuthAppleService,
-  ) {}
+  constructor(private readonly oAuthService: AuthOauthService) {}
 
-  @SerializeOptions({
-    groups: ['me'],
-  })
-  @Post('verify')
-  @HttpCode(HttpStatus.OK)
-  async verifyToken(
-    @Body() loginDto: AuthAppleLoginDto,
-  ): Promise<SocialLoginRegisterDto> {
-    return await this.authAppleService.getProfileByToken(loginDto);
-  }
-
-  @SerializeOptions({
-    groups: ['me'],
-  })
   @Post('register')
   @HttpCode(HttpStatus.OK)
   async validateSocialRegister(
-    @Body() socialData: SocialLoginRegisterDto,
+    @Body() socialData: SocialRegisterDto,
   ): Promise<LoginResponseType> {
     return this.oAuthService.validateSocialRegister('apple', socialData);
   }
@@ -52,7 +34,7 @@ export class AuthAppleController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async validateSocialLogin(
-    @Body() socialData: SocialLoginRegisterDto,
+    @Body() socialData: SocialLoginDto,
   ): Promise<LoginResponseType> {
     return this.oAuthService.validateSocialLogin('apple', socialData);
   }

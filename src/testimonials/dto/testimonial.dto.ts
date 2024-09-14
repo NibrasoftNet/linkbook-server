@@ -7,7 +7,7 @@ export class TestimonialDto extends EntityHelperDto {
   id: number;
 
   @AutoMap()
-  description: string;
+  comment: string;
 
   @AutoMap()
   rate: number;

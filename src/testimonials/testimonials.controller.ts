@@ -26,6 +26,9 @@ import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { ApiPaginationQuery, Paginate, PaginateQuery } from 'nestjs-paginate';
 import { testimonialPaginationConfig } from './config/testimonial-pagination-config';
+import { PaginatedDto } from '../utils/serialization/paginated.dto';
+import { Testimonial } from './entities/testimonial.entity';
+import { TestimonialDto } from './dto/testimonial.dto';
 
 @ApiTags('Testimonials')
 @ApiBearerAuth()
@@ -57,8 +60,16 @@ export class TestimonialsController {
   )
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findAll(@Paginate() query: PaginateQuery) {
-    return await this.testimonialsService.findAll(query);
+  async findAll(
+    @Paginate() query: PaginateQuery,
+  ): Promise<PaginatedDto<Testimonial, TestimonialDto>> {
+    const testimonials = await this.testimonialsService.findAll(query);
+    return new PaginatedDto<Testimonial, TestimonialDto>(
+      this.mapper,
+      testimonials,
+      Testimonial,
+      TestimonialDto,
+    );
   }
 
   @UseInterceptors(MapInterceptor(SearchHistory, SearchHistoryDto))

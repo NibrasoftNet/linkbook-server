@@ -11,7 +11,7 @@ export class Testimonial extends EntityHelper {
 
   @AutoMap()
   @Column()
-  description: string;
+  comment: string;
 
   @AutoMap()
   @Column()

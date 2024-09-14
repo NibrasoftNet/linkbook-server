@@ -52,6 +52,7 @@ import { ApplicantToSwapModule } from './applicant-to-swap/applicant-to-swap.mod
 import { SharedModule } from './shared-module/shared-module.module';
 import { Module } from '@nestjs/common';
 import { TestimonialsModule } from './testimonials/testimonials.module';
+import { WinstonLoggerModule } from './logger/winston-logger.module';
 
 @Module({
   imports: [
@@ -164,6 +165,7 @@ import { TestimonialsModule } from './testimonials/testimonials.module';
     ApplicantToSwapModule,
     SharedModule,
     TestimonialsModule,
+    WinstonLoggerModule
   ],
 
   providers: [

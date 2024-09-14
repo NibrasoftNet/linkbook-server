@@ -1,6 +1,8 @@
 import { HttpException, ValidationError } from '@nestjs/common';
 import { validateOrReject } from 'class-validator';
 import { ObjectLiteral, Repository } from 'typeorm';
+import crypto from 'crypto';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 
 export class Utils {
   static generateErrors(errors: ValidationError[]) {
@@ -17,8 +19,8 @@ export class Utils {
   }
 
   /* eslint-disable */
-    static async validateDtoOrFail<T extends Object>(dto: T): Promise<T> {
-        /* eslint-enable */
+  static async validateDtoOrFail<T extends Object>(dto: T): Promise<T> {
+    /* eslint-enable */
     await validateOrReject(dto).catch((validationErrors: ValidationError[]) => {
       const errors = Utils.generateErrors(validationErrors);
       throw new HttpException(Object.values(errors).join('. ').trim(), 422);
@@ -38,5 +40,12 @@ export class Utils {
       acc[x] = jest.fn();
       return acc;
     }, {});
+  }
+
+  static createSessionHash(): string {
+    return crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
   }
 }

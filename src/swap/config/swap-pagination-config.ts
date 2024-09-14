@@ -17,8 +17,8 @@ export const swapPaginationConfig: PaginateConfig<Swap> = {
   ],
   searchableColumns: ['description'],
   sortableColumns: ['createdAt', 'updatedAt', 'description'],
-  defaultLimit: 50,
-  maxLimit: 100,
+  defaultLimit: 20,
+  maxLimit: 20,
   loadEagerRelations: true,
   filterableColumns: {
     active: [FilterOperator.EQ, FilterSuffix.NOT],

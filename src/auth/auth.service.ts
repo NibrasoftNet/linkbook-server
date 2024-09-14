@@ -14,8 +14,6 @@ import { AuthUpdateDto } from './dto/auth-update.dto';
 import { RoleEnum } from '../roles/roles.enum';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { plainToClass } from 'class-transformer';
-import { Status } from '../statuses/entities/status.entity';
-import { Role } from '../roles/entities/role.entity';
 import { AuthProvidersEnum } from './auth-providers.enum';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { ConfirmOtpEmailDto } from '../otp/dto/confirm-otp-email.dto';
@@ -32,8 +30,6 @@ import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { Mapper } from 'automapper-core';
 import { InjectMapper } from 'automapper-nestjs';
 import { UserDto } from '../users/dto/user.dto';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import crypto from 'crypto';
 
 import {
   runOnTransactionComplete,
@@ -44,6 +40,10 @@ import { OtpService } from 'src/otp/otp.service';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthNewPasswordDto } from './dto/auth-new-password.dto';
+import { StatusesDto } from '../statuses/dto/statuses.dto';
+import { RoleDto } from '../roles/dto/role.dto';
+import { Status } from '../statuses/entities/status.entity';
+import { Utils } from '../utils/utils';
 
 @Injectable()
 export class AuthService {
@@ -93,88 +93,7 @@ export class AuthService {
       );
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
-    const session = await this.sessionService.create({
-      user,
-      hash,
-    });
-
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: user.id,
-      role: user.role,
-      sessionId: session.id,
-      hash,
-    });
-
-    return {
-      refreshToken: refreshToken,
-      token: token,
-      tokenExpires: tokenExpires,
-      user: this.mapper.map(user, User, UserDto),
-    };
-  }
-
-  // auth.service.ts
-
-  async mobileLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
-    let user = await this.usersService.findOne({
-      email: loginDto.email,
-    });
-    if (!user) {
-      // Attempt to restore a soft-deleted user by email
-      const restoredUser = await this.usersService.restoreUserByEmail(
-        loginDto.email,
-      );
-      user = restoredUser
-        ? restoredUser
-        : await this.usersService.create({
-            ...loginDto,
-            email: loginDto.email,
-            role: {
-              id: RoleEnum.USER,
-            } as Role,
-          });
-    }
-
-    if (user.provider !== AuthProvidersEnum.email) {
-      throw new UnprocessableEntityException(
-        `{"email": "${this.i18n.t('auth.loggedWithSocial', {
-          lang: I18nContext.current()?.lang,
-        })}:${user.provider}"}`,
-      );
-    }
-
-    const isValidPassword = await bcrypt.compare(
-      loginDto.password,
-      user.password,
-    );
-
-    if (!isValidPassword) {
-      throw new UnprocessableEntityException(
-        `{"password": "${this.i18n.t('auth.invalidPassword', {
-          lang: I18nContext.current()?.lang,
-        })}"}`,
-      );
-    }
-
-    if (user.status?.id === StatusEnum.INACTIVE) {
-      await this.sendConfirmEmail(user.email);
-      throw new ForbiddenException(
-        `{"email": "${this.i18n.t('auth.emailNotConfirmed', {
-          lang: I18nContext.current()?.lang,
-        })}"}`,
-        {},
-      );
-    }
-
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const hash = Utils.createSessionHash();
 
     const session = await this.sessionService.create({
       user,
@@ -207,7 +126,10 @@ export class AuthService {
           email: dto.email,
           role: {
             id: RoleEnum.USER,
-          } as Role,
+          } as RoleDto,
+          status: {
+            id: StatusEnum.ACTIVE,
+          } as StatusesDto,
         });
     await this.sendConfirmEmail(user.email);
     return true;
@@ -265,10 +187,33 @@ export class AuthService {
     await user.save();
   }
 
-  async me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>> {
-    return this.usersService.findOne({
+  async me(userJwtPayload: JwtPayloadType): Promise<LoginResponseType> {
+    const user = await this.usersService.findOne({
       id: userJwtPayload.id,
     });
+    const hash = Utils.createSessionHash();
+
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
+
+    const {
+      token: jwtToken,
+      refreshToken,
+      tokenExpires,
+    } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash: Utils.createSessionHash(),
+    });
+    return {
+      refreshToken: refreshToken,
+      token: jwtToken,
+      tokenExpires: tokenExpires,
+      user: this.mapper.map(user, User, UserDto),
+    };
   }
 
   async update(
@@ -326,10 +271,7 @@ export class AuthService {
       );
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const hash = Utils.createSessionHash();
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,

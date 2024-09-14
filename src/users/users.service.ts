@@ -61,8 +61,8 @@ export class UsersService {
     return await paginate(query, this.usersRepository, usersPaginationConfig);
   }
 
-  async findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
-    return this.usersRepository.findOne({
+  async findOne(fields: EntityCondition<User>): Promise<User> {
+    return await this.usersRepository.findOneOrFail({
       where: fields,
       relations: {
         address: true,

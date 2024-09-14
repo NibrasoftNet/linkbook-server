@@ -5,7 +5,7 @@ export class CreateTestimonialDto {
   @AutoMap()
   @IsString()
   @IsNotEmpty()
-  description: string;
+  comment: string;
 
   @AutoMap()
   @IsNumber()

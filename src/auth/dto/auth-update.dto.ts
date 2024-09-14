@@ -6,17 +6,17 @@ import { CreateAddressDto } from '../../address/dto/create-address.dto';
 export class AuthUpdateDto {
   @ApiProperty({ example: 'John' })
   @IsOptional()
-  firstName?: string;
+  firstName?: string | null;
 
   @ApiProperty({ example: 'Doe' })
   @IsOptional()
-  lastName?: string;
+  lastName?: string | null;
 
   @ApiProperty()
   @IsOptional()
-  @ValidateNested()
   @Type(() => CreateAddressDto)
-  address?: CreateAddressDto;
+  // @ValidateNested()
+  address?: CreateAddressDto | null;
 
   @ApiProperty()
   @IsOptional()

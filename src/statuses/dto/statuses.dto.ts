@@ -2,11 +2,11 @@ import { AutoMap } from 'automapper-classes';
 import { Validate } from 'class-validator';
 import { IsExist } from '../../utils/validators/is-exists.validator';
 
-export class FileDto {
+export class StatusesDto {
   @AutoMap()
-  @Validate(IsExist, ['FileEntity', 'id', 'validation.imageNotExists'])
-  id: string;
+  @Validate(IsExist, ['Status', 'id', 'validation.statusNotExists'])
+  id: number;
 
   @AutoMap()
-  path: string;
+  name: string;
 }

@@ -1,6 +1,5 @@
 import { Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../../roles/entities/role.entity';
 import {
   IsEmail,
   IsNotEmpty,
@@ -11,21 +10,37 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { IsNotExist } from '../../utils/validators/is-not-exists.validator';
-import { IsExist } from '../../utils/validators/is-exists.validator';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
 import { CreateAddressDto } from '../../address/dto/create-address.dto';
-import { Status } from '../../statuses/entities/status.entity';
 import { FileDto } from '../../files/dto/file.dto';
+import { RoleDto } from '../../roles/dto/role.dto';
+import { StatusesDto } from '../../statuses/dto/statuses.dto';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform(lowerCaseTransformer)
   @IsNotEmpty()
-  @Validate(IsNotExist, ['User'], {
-    message: 'emailAlreadyExists',
-  })
+  @Validate(IsNotExist, ['User', 'email', 'validation.emailAlreadyExists'])
   @IsEmail()
   email: string;
+
+  @ApiProperty({ type: RoleDto })
+  @IsNotEmpty()
+  @Type(() => RoleDto)
+  @ValidateNested()
+  role: RoleDto;
+
+  @ApiProperty({ type: StatusesDto })
+  @IsNotEmpty()
+  @Type(() => StatusesDto)
+  @ValidateNested()
+  status: StatusesDto;
+
+  @ApiProperty({ type: () => FileDto })
+  @IsOptional()
+  @Type(() => FileDto)
+  @ValidateNested()
+  photo?: FileDto | null;
 
   @ApiProperty({ example: 'John' })
   @IsString()
@@ -37,13 +52,8 @@ export class CreateUserDto {
   @IsString()
   lastName?: string;
 
-  @ApiProperty({ type: () => FileDto })
-  @IsOptional()
-  @Type(() => FileDto)
-  @Validate(IsExist, ['FileEntity', 'id', 'validation.imageNotExists'])
-  photo?: FileDto | null;
-
   @ApiProperty()
+  @IsOptional()
   @IsStrongPassword({
     minLength: 5,
     minLowercase: 1,
@@ -56,18 +66,6 @@ export class CreateUserDto {
   provider?: string;
 
   socialId?: string;
-
-  @ApiProperty({ type: Role })
-  @Validate(IsNotExist, ['Role', 'id'], {
-    message: 'roleNotExists',
-  })
-  role: Role;
-
-  @ApiProperty({ type: Status })
-  @Validate(IsNotExist, ['Status', 'id'], {
-    message: 'statusNotExists',
-  })
-  status?: Status;
 
   hash?: string | null;
 
@@ -85,4 +83,36 @@ export class CreateUserDto {
   @ApiProperty()
   @IsOptional()
   referralCode?: string;
+
+  constructor({
+    email,
+    role,
+    status,
+    photo,
+    firstName,
+    lastName,
+    password,
+    provider,
+    socialId,
+  }: {
+    email: string;
+    role: RoleDto;
+    status: StatusesDto;
+    photo?: FileDto | null;
+    firstName?: string;
+    lastName?: string;
+    password?: string;
+    provider?: string;
+    socialId?: string;
+  }) {
+    this.email = email;
+    this.role = role;
+    this.status = status;
+    this.photo = photo;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.password = password;
+    this.provider = provider;
+    this.socialId = socialId;
+  }
 }

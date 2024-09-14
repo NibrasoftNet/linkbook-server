@@ -30,7 +30,7 @@ export class AdminOnlyGuard implements CanActivate {
     const user = await this.authService.me(userJwtPayload);
 
     // Check if the user has the required role (assuming roleId 1 means admin)
-    if (user?.role?.id === 1) {
+    if (user?.user.role === 'admin') {
       return true;
     }
     throw new ForbiddenException(

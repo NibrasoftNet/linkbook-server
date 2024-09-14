@@ -67,18 +67,6 @@ export class AuthController {
     }
   }
 
-  @Post('email/login/mobile')
-  @HttpCode(HttpStatus.OK)
-  public async mobileLogin(
-    @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
-    try {
-      return await this.service.mobileLogin(loginDto);
-    } catch (error) {
-      throw new HttpResponseException(error);
-    }
-  }
-
   @Post('email/register')
   @HttpCode(HttpStatus.CREATED)
   async register(
@@ -131,8 +119,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(MapInterceptor(User, UserDto))
-  public async me(@Request() request): Promise<NullableType<User>> {
+  public async me(@Request() request): Promise<LoginResponseType> {
     try {
       return await this.service.me(request.user);
     } catch (error) {
