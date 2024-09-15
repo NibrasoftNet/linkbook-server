@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from '../../address/dto/create-address.dto';
 
@@ -33,6 +33,11 @@ export class AuthUpdateDto {
   @IsEmail()
   password?: string;
 
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  notificationsToken?: string;
+
   constructor({
     firstName,
     lastName,
@@ -40,6 +45,7 @@ export class AuthUpdateDto {
     phone,
     email,
     password,
+    notificationsToken,
   }: {
     firstName?: string;
     lastName?: string;
@@ -47,6 +53,7 @@ export class AuthUpdateDto {
     phone?: string;
     email?: string;
     password?: string;
+    notificationsToken?: string;
   }) {
     this.firstName = firstName;
     this.lastName = lastName;
@@ -54,5 +61,6 @@ export class AuthUpdateDto {
     this.phone = phone;
     this.email = email;
     this.password = password;
+    this.notificationsToken = notificationsToken;
   }
 }

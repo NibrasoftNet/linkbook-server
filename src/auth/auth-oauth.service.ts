@@ -18,6 +18,8 @@ import { RoleDto } from '../roles/dto/role.dto';
 import { StatusesDto } from '../statuses/dto/statuses.dto';
 import { SocialLoginDto } from '../social/interfaces/social-login.dto';
 import { CreateFileDto } from '../files/dto/create-file.dto';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { ActivateNotificationDto } from '../social/activate-notification.dto';
 
 @Injectable()
 export class AuthOauthService {
@@ -147,6 +149,44 @@ export class AuthOauthService {
       hash,
     });
 
+    return {
+      refreshToken: refreshToken,
+      token: jwtToken,
+      tokenExpires: tokenExpires,
+      user: this.mapper.map(user, User, UserDto),
+    };
+  }
+
+  async activate(
+    userJwtPayload: JwtPayloadType,
+    activateNotificationDto?: ActivateNotificationDto,
+  ): Promise<LoginResponseType> {
+    console.log('aqwxcvb', activateNotificationDto);
+    const user = await this.usersService.findOne({
+      id: userJwtPayload.id,
+    });
+    if (activateNotificationDto?.notificationsToken) {
+      await this.usersService.update(user.id, {
+        notificationsToken: activateNotificationDto.notificationsToken,
+      });
+    }
+    const hash = Utils.createSessionHash();
+
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
+
+    const {
+      token: jwtToken,
+      refreshToken,
+      tokenExpires,
+    } = await this.authService.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash: Utils.createSessionHash(),
+    });
     return {
       refreshToken: refreshToken,
       token: jwtToken,

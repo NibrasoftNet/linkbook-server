@@ -93,6 +93,12 @@ export class AuthService {
       );
     }
 
+    if (loginDto.notificationsToken) {
+      await this.usersService.update(user.id, {
+        notificationsToken: loginDto.notificationsToken,
+      });
+    }
+
     const hash = Utils.createSessionHash();
 
     const session = await this.sessionService.create({

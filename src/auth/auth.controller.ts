@@ -128,9 +128,6 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @SerializeOptions({
-    groups: ['me'],
-  })
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)

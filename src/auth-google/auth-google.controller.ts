@@ -1,5 +1,15 @@
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Put,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthOauthService } from '../auth/auth-oauth.service';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
@@ -10,6 +20,10 @@ import { SocialLoginDto } from '../social/interfaces/social-login.dto';
 import { Response } from 'express';
 import { AllConfigType } from '../config/config.type';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
+import { LoginResponseType } from '../auth/types/login-response.type';
+import { HttpResponseException } from '../utils/exceptions/http-response.exception';
+import { ActivateNotificationDto } from '../social/activate-notification.dto';
 
 @ApiTags('Google OAuth')
 @Controller({
@@ -64,5 +78,23 @@ export class AuthGoogleController {
     response.redirect(
       `${this.configService.getOrThrow('app.frontendDomain', { infer: true })}/redirect?token=${loggedUser.token}`,
     );
+  }
+
+  @ApiBearerAuth()
+  @Put('activate')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  public async activate(
+    @Request() request,
+    @Body() activateNotificationDto: ActivateNotificationDto,
+  ): Promise<LoginResponseType> {
+    try {
+      return await this.oAuthService.activate(
+        request.user,
+        activateNotificationDto,
+      );
+    } catch (error) {
+      throw new HttpResponseException(error);
+    }
   }
 }
