@@ -16,6 +16,9 @@ import { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
 import { UsersService } from '../users/users.service';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
 import { applicantToDonationPaginationConfig } from './config/applicant-to-donation-pagination-config';
+import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../notification/dto/create-notification.dto';
+import { NotificationTypeOfSendingEnum } from '../notification/enum/notification-type-of-sending.enum';
 
 @Injectable()
 export class ApplicantToDonationService {
@@ -26,6 +29,7 @@ export class ApplicantToDonationService {
     private readonly donationRepository: Repository<Donation>,
     private readonly usersService: UsersService,
     private readonly i18n: I18nService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(id: number, userJwtPayload: JwtPayloadType) {
@@ -97,14 +101,21 @@ export class ApplicantToDonationService {
           ApplicantToDonation,
           {
             where: { id },
-            relations: ['donation'],
+            relations: { donation: true, applicant: true },
           },
         );
 
-        // Step 2: Approve the selected applicant
+        // Step 2: Approve the selected applicant and send accept notification
         applicant.status = DonationStatusEnum.ACCEPTED;
         await entityManager.save(applicant);
-
+        const createNotificationDto = new CreateNotificationDto({
+          title: 'Donation Accepted',
+          message: 'Donation has been accepted',
+          forAllUsers: false,
+          users: [applicant.applicant],
+          typeOfSending: NotificationTypeOfSendingEnum.IMMEDIATELY,
+        });
+        await this.notificationService.create(createNotificationDto);
         // Step 3: Reject all other applicants with the same donationId
         await entityManager.update(
           ApplicantToDonation,

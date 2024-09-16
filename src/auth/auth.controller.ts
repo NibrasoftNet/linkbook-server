@@ -8,8 +8,8 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Request,
-  SerializeOptions,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -119,9 +119,12 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  public async me(@Request() request): Promise<LoginResponseType> {
+  public async me(
+    @Request() request,
+    @Query('token') notificationToken?: string,
+  ): Promise<LoginResponseType> {
     try {
-      return await this.service.me(request.user);
+      return await this.service.me(request.user, notificationToken);
     } catch (error) {
       throw new HttpResponseException(error);
     }

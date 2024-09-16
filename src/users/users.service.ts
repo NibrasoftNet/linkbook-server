@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { NullableType } from '../utils/types/nullable.type';
 import { AddressService } from '../address/address.service';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { usersPaginationConfig } from './configs/users-pagination.config';
@@ -22,6 +21,7 @@ import {
 } from 'typeorm-transactional';
 import { FilesService } from '../files/files.service';
 import { AuthUpdateDto } from '../auth/dto/auth-update.dto';
+import { WinstonLoggerService } from '../logger/winston-logger.service';
 
 @Injectable()
 export class UsersService {
@@ -30,6 +30,7 @@ export class UsersService {
     private usersRepository: Repository<User>,
     private readonly addressService: AddressService,
     private fileService: FilesService,
+    private readonly logger: WinstonLoggerService,
   ) {}
   @Transactional()
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -133,7 +134,37 @@ export class UsersService {
     return null;
   }
 
-  // async findRoleById(roleId: number): Promise<Role | null> {
-  //   return this.rolesRepository.findOne({ where: { id: roleId } });
-  // }
+  async findAllUsersToken(userIds?: number[]): Promise<string[]> {
+    const query = this.usersRepository
+      .createQueryBuilder('user')
+      .select('user.notificationToken')
+      .where('user.notificationToken IS NOT NULL'); // To avoid selecting null values
+
+    // If userIds are provided, filter by user IDs
+    if (userIds && userIds.length > 0) {
+      query.andWhere('user.id IN (:...userIds)', { userIds });
+    }
+
+    const result = await query.getMany();
+
+    // Extract the notification tokens as an array of strings
+    return result.map((user) => user.notificationsToken) as string[];
+  }
+
+  async findAllUsersByIds(userIds: number[]): Promise<Array<User>> {
+    const stopWatching = this.logger.watch('users-findAllUsersByIds', {
+      description: `Find All Users By Ids`,
+      class: UsersService.name,
+      function: 'findAllUsersToken',
+    });
+
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.status', 'status')
+      .orWhereInIds(userIds);
+    const users = await queryBuilder.getMany();
+    stopWatching();
+    return users;
+  }
 }

@@ -21,6 +21,9 @@ import { ProductService } from '../product/product.service';
 import { CreateApplicantToSwapDto } from './dto/create-applicant-to-swap.dto';
 import { ProductTypeEnum } from '../product/enum/product-type.enum';
 import { Utils } from '../utils/utils';
+import { CreateNotificationDto } from '../notification/dto/create-notification.dto';
+import { NotificationTypeOfSendingEnum } from '../notification/enum/notification-type-of-sending.enum';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class ApplicantToSwapService {
@@ -32,6 +35,7 @@ export class ApplicantToSwapService {
     private readonly usersService: UsersService,
     private readonly productService: ProductService,
     private readonly i18n: I18nService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(
@@ -53,7 +57,6 @@ export class ApplicantToSwapService {
     applicant.applicant = await this.usersService.findOneOrFail({
       id: userJwtPayload.id,
     });
-    console.log('azerty', applicant);
     applicant.swap = await this.swapRepository.findOneOrFail({
       where: { id, active: true, creator: { id: Not(userJwtPayload.id) } },
     });
@@ -107,12 +110,20 @@ export class ApplicantToSwapService {
         // Step 1: Find the applicant to get the related swap ID
         const applicant = await entityManager.findOneOrFail(ApplicantToSwap, {
           where: { id },
-          relations: ['swap'],
+          relations: { swap: true, applicant: true },
         });
 
         // Step 2: Approve the selected applicant
         applicant.status = SwapStatusEnum.ACCEPTED;
         await entityManager.save(applicant);
+        const createNotificationDto = new CreateNotificationDto({
+          title: 'Swap Accepted',
+          message: 'Swap has been accepted',
+          forAllUsers: false,
+          users: [applicant.applicant],
+          typeOfSending: NotificationTypeOfSendingEnum.IMMEDIATELY,
+        });
+        await this.notificationService.create(createNotificationDto);
 
         // Step 3: Reject all other applicants with the same swapId
         await entityManager.update(

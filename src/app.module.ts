@@ -53,6 +53,10 @@ import { SharedModule } from './shared-module/shared-module.module';
 import { Module } from '@nestjs/common';
 import { TestimonialsModule } from './testimonials/testimonials.module';
 import { WinstonLoggerModule } from './logger/winston-logger.module';
+import { GraphileWorkerModule } from 'nestjs-graphile-worker';
+import { NotificationModule } from './notification/notification.module';
+import { NotificationTask } from './utils/graphile-worker/notification-task';
+import { NotificationCronTask } from './utils/graphile-worker/notification-cronjob';
 
 @Module({
   imports: [
@@ -139,6 +143,14 @@ import { WinstonLoggerModule } from './logger/winston-logger.module';
       }),
       inject: [ConfigService],
     }),
+    GraphileWorkerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connectionString: config.get('PG_CONNECTION'),
+        //crontab: `0 4 * * * notification-cron`,
+      }),
+    }),
     UsersModule,
     FilesModule,
     AuthModule,
@@ -165,7 +177,8 @@ import { WinstonLoggerModule } from './logger/winston-logger.module';
     ApplicantToSwapModule,
     SharedModule,
     TestimonialsModule,
-    WinstonLoggerModule
+    WinstonLoggerModule,
+    NotificationModule,
   ],
 
   providers: [
@@ -173,6 +186,9 @@ import { WinstonLoggerModule } from './logger/winston-logger.module';
     ImageExistsInS3Validator,
     EntityHelperProfile,
     IsNotUsedByOthers,
+    //ExportTask,
+    NotificationTask,
+    NotificationCronTask,
   ],
 })
 export class AppModule {}

@@ -193,12 +193,20 @@ export class AuthService {
     await user.save();
   }
 
-  async me(userJwtPayload: JwtPayloadType): Promise<LoginResponseType> {
+  async me(
+    userJwtPayload: JwtPayloadType,
+    notificationToken?: string,
+  ): Promise<LoginResponseType> {
     const user = await this.usersService.findOne({
       id: userJwtPayload.id,
     });
-    const hash = Utils.createSessionHash();
+    if (notificationToken) {
+      await this.usersService.update(user.id, {
+        notificationsToken: notificationToken,
+      });
+    }
 
+    const hash = Utils.createSessionHash();
     const session = await this.sessionService.create({
       user,
       hash,

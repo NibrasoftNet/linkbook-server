@@ -19,6 +19,7 @@ import validationOptions from './utils/validation-options';
 import { ResponseInterceptor } from './utils/interceptors/response.interceptor';
 import { WinstonLoggerService } from './logger/winston-logger.service';
 import { HttpExceptionFilter } from './utils/exceptions/http-exception.filter';
+import { WorkerService } from 'nestjs-graphile-worker';
 
 const logger = new Logger('Linkbook-main');
 const whitelist = [
@@ -89,7 +90,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
-
+  await app.get(WorkerService).run();
   await app.listen(
     configService.getOrThrow('app.port', { infer: true }),
     () => {

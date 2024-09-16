@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApplicantToDonation } from './entities/applicant-to-donation.entity';
 import { Donation } from '../donation/entities/donation.entity';
 import { UsersModule } from '../users/users.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ApplicantToDonation, Donation]),
     UsersModule,
+    NotificationModule,
   ],
   controllers: [ApplicantToDonationController],
   providers: [
