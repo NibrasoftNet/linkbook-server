@@ -4,7 +4,7 @@ import { Notification } from '../entities/notification.entity';
 
 export const notificationsPaginationConfig: PaginateConfig<Notification> = {
   defaultSortBy: [['createdAt', 'DESC']],
-  relations: ['user'],
+  relations: ['users'],
   searchableColumns: ['title', 'message', 'typeOfSending'],
   sortableColumns: ['createdAt', 'updatedAt', 'active', 'typeOfSending'],
   maxLimit: 100,

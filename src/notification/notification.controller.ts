@@ -29,7 +29,6 @@ import { Notification } from './entities/notification.entity';
 import { PaginatedDto } from '../utils/serialization/paginated.dto';
 import { Mapper } from 'automapper-core';
 import { NotificationDto } from './dto/notification.dto';
-import { isDefinedValidator } from '../utils/validators/is-defined.validator';
 import { notificationsPaginationConfig } from './configs/notifications-pagination.config';
 
 @ApiBearerAuth()

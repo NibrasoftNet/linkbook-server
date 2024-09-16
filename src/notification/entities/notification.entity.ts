@@ -49,7 +49,7 @@ export class Notification extends EntityHelper {
   @Column({ default: true })
   active: boolean;
 
-  @AutoMap(() => User)
+  @AutoMap(() => [User])
   @ManyToMany(() => User, { nullable: true })
   @JoinTable()
   users: User[];

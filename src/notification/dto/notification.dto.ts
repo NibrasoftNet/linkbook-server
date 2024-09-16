@@ -1,7 +1,6 @@
 import { NotificationTypeOfSendingEnum } from '../enum/notification-type-of-sending.enum';
 
 import { AutoMap } from 'automapper-classes';
-import { AddressDto } from '../../address/dto/address.dto';
 import { UserDto } from '../../users/dto/user.dto';
 
 export class NotificationDto {
