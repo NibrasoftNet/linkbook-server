@@ -101,7 +101,7 @@ export class ApplicantToDonationService {
           ApplicantToDonation,
           {
             where: { id },
-            relations: { donation: true, applicant: true },
+            relations: { donation: { creator: true }, applicant: true },
           },
         );
 
@@ -110,7 +110,7 @@ export class ApplicantToDonationService {
         await entityManager.save(applicant);
         const createNotificationDto = new CreateNotificationDto({
           title: 'Donation Accepted',
-          message: 'Donation has been accepted',
+          message: `${applicant.donation.creator.firstName} accepted your request.`,
           forAllUsers: false,
           users: [applicant.applicant],
           typeOfSending: NotificationTypeOfSendingEnum.IMMEDIATELY,

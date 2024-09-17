@@ -110,7 +110,7 @@ export class ApplicantToSwapService {
         // Step 1: Find the applicant to get the related swap ID
         const applicant = await entityManager.findOneOrFail(ApplicantToSwap, {
           where: { id },
-          relations: { swap: true, applicant: true },
+          relations: { swap: { creator: true }, applicant: true },
         });
 
         // Step 2: Approve the selected applicant
@@ -118,7 +118,7 @@ export class ApplicantToSwapService {
         await entityManager.save(applicant);
         const createNotificationDto = new CreateNotificationDto({
           title: 'Swap Accepted',
-          message: 'Swap has been accepted',
+          message: `${applicant.swap.creator.firstName} accepted your request.`,
           forAllUsers: false,
           users: [applicant.applicant],
           typeOfSending: NotificationTypeOfSendingEnum.IMMEDIATELY,
