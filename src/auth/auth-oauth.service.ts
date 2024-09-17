@@ -20,6 +20,7 @@ import { SocialLoginDto } from '../social/interfaces/social-login.dto';
 import { CreateFileDto } from '../files/dto/create-file.dto';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { ActivateNotificationDto } from '../social/activate-notification.dto';
+import { defaultAddress } from '../utils/constants';
 
 @Injectable()
 export class AuthOauthService {
@@ -38,7 +39,6 @@ export class AuthOauthService {
   ): Promise<LoginResponseType> {
     const { email, photo } = socialData;
     const socialEmail = email?.toLowerCase();
-    console.log();
     const role = {
       id: RoleEnum.USER,
     } as RoleDto;
@@ -58,7 +58,6 @@ export class AuthOauthService {
     // Attempt to restore a soft-deleted user by email
     const restoredUser =
       await this.usersService.restoreUserByEmail(socialEmail);
-    console.log('profilePhoto', profilePhoto, email);
     const newUser = new CreateUserDto({
       email,
       role,
@@ -68,6 +67,14 @@ export class AuthOauthService {
       lastName: socialData.lastName,
       provider: authProvider,
       socialId: socialData.id,
+      address: {
+        city: defaultAddress.city,
+        country: defaultAddress.country,
+        countryFlag: defaultAddress.countryFlag,
+        latitude: defaultAddress.latitude,
+        longitude: defaultAddress.longitude,
+        street: defaultAddress.street,
+      },
     });
     await Utils.validateDtoOrFail(newUser);
 

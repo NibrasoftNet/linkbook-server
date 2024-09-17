@@ -91,6 +91,7 @@ export class CreateUserDto {
     photo,
     firstName,
     lastName,
+    address,
     password,
     provider,
     socialId,
@@ -101,6 +102,7 @@ export class CreateUserDto {
     photo?: FileDto | null;
     firstName?: string;
     lastName?: string;
+    address?: CreateAddressDto;
     password?: string;
     provider?: string;
     socialId?: string;
@@ -111,6 +113,7 @@ export class CreateUserDto {
     this.photo = photo;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.address = address;
     this.password = password;
     this.provider = provider;
     this.socialId = socialId;
