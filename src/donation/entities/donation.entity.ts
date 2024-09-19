@@ -56,7 +56,7 @@ export class Donation extends EntityHelper {
   @AutoMap(() => [ApplicantToDonation])
   @OneToMany(
     () => ApplicantToDonation,
-    (applicantToDonation) => applicantToDonation.donation,
+    (applicantToDonation) => applicantToDonation.applicant,
     { nullable: true, onDelete: 'SET NULL' },
   )
   applicants: ApplicantToDonation[];

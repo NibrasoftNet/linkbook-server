@@ -55,9 +55,13 @@ export class Swap extends EntityHelper {
   product: Product;
 
   @AutoMap(() => [ApplicantToSwap])
-  @OneToMany(() => ApplicantToSwap, (applicantToSwap) => applicantToSwap.swap, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @OneToMany(
+    () => ApplicantToSwap,
+    (applicantToSwap) => applicantToSwap.applicant,
+    {
+      nullable: true,
+      onDelete: 'SET NULL',
+    },
+  )
   applicants: ApplicantToSwap[];
 }

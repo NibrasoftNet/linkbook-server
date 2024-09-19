@@ -25,6 +25,7 @@ import { Donation } from '../../donation/entities/donation.entity';
 import { ApplicantToDonation } from '../../applicant-to-donation/entities/applicant-to-donation.entity';
 import { Swap } from '../../swap/entities/swap.entity';
 import { ApplicantToSwap } from '../../applicant-to-swap/entities/applicant-to-swap.entity';
+import { ApplicantToCommunity } from '../../applicant-to-community/entities/applicant-to-community.entity';
 
 @Entity()
 export class User extends EntityHelper {
@@ -134,6 +135,16 @@ export class User extends EntityHelper {
     nullable: true,
   })
   requestedSwaps: ApplicantToSwap[];
+
+  @AutoMap(() => [ApplicantToCommunity])
+  @OneToMany(
+    () => ApplicantToCommunity,
+    (applicantToCommunity) => applicantToCommunity.community,
+    {
+      nullable: true,
+    },
+  )
+  requestedCommunities: ApplicantToCommunity[];
 
   @AutoMap(() => Boolean)
   @Column({ type: Boolean, default: true })

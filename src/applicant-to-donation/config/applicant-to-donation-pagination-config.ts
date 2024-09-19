@@ -4,7 +4,7 @@ import { ApplicantToDonation } from '../entities/applicant-to-donation.entity';
 export const applicantToDonationPaginationConfig: PaginateConfig<ApplicantToDonation> =
   {
     defaultSortBy: [['createdAt', 'DESC']],
-    relations: ['donation', 'applicant'],
+    relations: ['donation', 'applicant', 'donation.creator'],
     searchableColumns: ['status'],
     sortableColumns: ['createdAt', 'updatedAt', 'status'],
     defaultLimit: 50,
