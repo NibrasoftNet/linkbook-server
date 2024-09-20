@@ -116,7 +116,7 @@ export class User extends EntityHelper {
   @AutoMap(() => [ApplicantToDonation])
   @OneToMany(
     () => ApplicantToDonation,
-    (applicantToDonation) => applicantToDonation.donation,
+    (applicantToDonation) => applicantToDonation.applicant,
     {
       nullable: true,
     },
@@ -131,15 +131,19 @@ export class User extends EntityHelper {
   swaps?: Swap[];
 
   @AutoMap(() => [ApplicantToSwap])
-  @OneToMany(() => ApplicantToSwap, (applicantToSwap) => applicantToSwap.swap, {
-    nullable: true,
-  })
+  @OneToMany(
+    () => ApplicantToSwap,
+    (applicantToSwap) => applicantToSwap.applicant,
+    {
+      nullable: true,
+    },
+  )
   requestedSwaps: ApplicantToSwap[];
 
   @AutoMap(() => [ApplicantToCommunity])
   @OneToMany(
     () => ApplicantToCommunity,
-    (applicantToCommunity) => applicantToCommunity.community,
+    (applicantToCommunity) => applicantToCommunity.subscriber,
     {
       nullable: true,
     },
