@@ -2,12 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UpdateApplicantToCommunityDto } from './dto/update-applicant-to-community.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicantToCommunity } from './entities/applicant-to-community.entity';
-import {
-  EntityManager,
-  FindOptionsRelations,
-  FindOptionsWhere,
-  Repository,
-} from 'typeorm';
+import { FindOptionsRelations, FindOptionsWhere, Repository } from 'typeorm';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
@@ -17,6 +12,7 @@ import { CreateNotificationDto } from '../notification/dto/create-notification.d
 import { NotificationTypeOfSendingEnum } from '../notification/enum/notification-type-of-sending.enum';
 import { Community } from '../community/entities/community.entity';
 import { CommunitySubscriptionStatusEnum } from './enums/community-subscription-status.enum';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ApplicantToCommunityService {
@@ -24,6 +20,8 @@ export class ApplicantToCommunityService {
     @InjectRepository(ApplicantToCommunity)
     private readonly applicantToCommunityRepository: Repository<ApplicantToCommunity>,
     @InjectRepository(Community)
+    private readonly communityRepository: Repository<Community>,
+    private readonly usersService: UsersService,
     private readonly i18n: I18nService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -38,8 +36,15 @@ export class ApplicantToCommunityService {
         `{"community": "${this.i18n.t('community.alreadyApplied', { lang: I18nContext.current()?.lang })}"}`,
       );
     }
-    const applicant = this.applicantToCommunityRepository.create();
-    return await this.applicantToCommunityRepository.save(applicant);
+    const applicantToCommunity = this.applicantToCommunityRepository.create();
+    applicantToCommunity.community =
+      await this.communityRepository.findOneOrFail({
+        where: { id },
+      });
+    applicantToCommunity.subscriber = await this.usersService.findOneOrFail({
+      id: userJwtPayload.id,
+    });
+    return await this.applicantToCommunityRepository.save(applicantToCommunity);
   }
 
   async findAll(query: PaginateQuery) {
@@ -50,11 +55,14 @@ export class ApplicantToCommunityService {
     );
   }
 
-  async findAllMe(userJwtPayload: JwtPayloadType, query: PaginateQuery) {
+  async findAllRequestedMe(
+    userJwtPayload: JwtPayloadType,
+    query: PaginateQuery,
+  ) {
     const queryBuilder = this.applicantToCommunityRepository
       .createQueryBuilder('applicantToCommunity')
-      .leftJoinAndSelect('applicantToCommunity.applicant', 'applicant')
-      .where('applicant.id = :id', { id: userJwtPayload.id });
+      .leftJoinAndSelect('applicantToCommunity.subscriber', 'subscriber')
+      .where('subscriber.id = :id', { id: userJwtPayload.id });
 
     return await paginate(
       query,
@@ -84,30 +92,23 @@ export class ApplicantToCommunityService {
   }
 
   async approve(id: string) {
-    await this.applicantToCommunityRepository.manager.transaction(
-      async (entityManager: EntityManager) => {
-        // Step 1: Find the applicant to get the related Community ID
-        const applicant = await entityManager.findOneOrFail(
-          ApplicantToCommunity,
-          {
-            where: { id },
-            relations: { community: { creator: true } },
-          },
-        );
-
-        // Step 2: Approve the selected applicant and send accept notification
-        applicant.status = CommunitySubscriptionStatusEnum.ACCEPTED;
-        await entityManager.save(applicant);
-        const createNotificationDto = new CreateNotificationDto({
-          title: 'Community Accepted',
-          message: `${applicant.community.creator.firstName} accepted your request.`,
-          forAllUsers: false,
-          users: [applicant.subscriber],
-          typeOfSending: NotificationTypeOfSendingEnum.IMMEDIATELY,
-        });
-        await this.notificationService.create(createNotificationDto);
-      },
+    // Step 1: Find the applicant to get the related Community ID
+    const applicantToCommunity = await this.findOneOrFail(
+      { id },
+      { subscriber: true, community: { creator: true } },
     );
+    // Step 2: Approve the selected applicant and send accept notification
+    applicantToCommunity.status = CommunitySubscriptionStatusEnum.ACCEPTED;
+    await this.applicantToCommunityRepository.save(applicantToCommunity);
+    const createNotificationDto = new CreateNotificationDto({
+      title: 'Community join Accepted',
+      message: `${applicantToCommunity.community.creator.firstName} accepted your request.`,
+      forAllUsers: false,
+      users: [applicantToCommunity.subscriber],
+      typeOfSending: NotificationTypeOfSendingEnum.IMMEDIATELY,
+    });
+    applicantToCommunity.subscriber.notificationsToken &&
+      (await this.notificationService.create(createNotificationDto));
   }
 
   async reject(id: string) {

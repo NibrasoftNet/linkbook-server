@@ -44,7 +44,7 @@ export class Community extends EntityHelper {
   @AutoMap(() => [ApplicantToCommunity])
   @OneToMany(
     () => ApplicantToCommunity,
-    (applicantToCommunity) => applicantToCommunity.subscriber,
+    (applicantToCommunity) => applicantToCommunity.community,
     { nullable: true, onDelete: 'SET NULL' },
   )
   subscribers: ApplicantToCommunity[];

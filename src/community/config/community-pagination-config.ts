@@ -3,7 +3,13 @@ import { Community } from '../entities/community.entity';
 
 export const communityPaginationConfig: PaginateConfig<Community> = {
   defaultSortBy: [['createdAt', 'DESC']],
-  relations: ['creator', 'creator.photo', 'subscribers'],
+  relations: [
+    'creator',
+    'creator.photo',
+    'subscribers',
+    'subscribers.subscriber',
+    'image',
+  ],
   searchableColumns: ['name'],
   sortableColumns: ['createdAt', 'updatedAt', 'name'],
   defaultLimit: 20,

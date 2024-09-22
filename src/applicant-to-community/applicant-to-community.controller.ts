@@ -59,12 +59,15 @@ export class ApplicantToCommunityController {
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Get('list/_me')
   @HttpCode(HttpStatus.OK)
-  async findAllMe(
+  async findAllRequestedMe(
     @Request() request,
     @Paginate() query: PaginateQuery,
   ): Promise<PaginatedDto<ApplicantToCommunity, ApplicantToCommunityDto>> {
     const requestedCommunities =
-      await this.applicantToCommunityService.findAllMe(request.user, query);
+      await this.applicantToCommunityService.findAllRequestedMe(
+        request.user,
+        query,
+      );
     return new PaginatedDto<ApplicantToCommunity, ApplicantToCommunityDto>(
       this.mapper,
       requestedCommunities,

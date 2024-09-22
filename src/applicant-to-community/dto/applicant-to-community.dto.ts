@@ -12,7 +12,7 @@ export class ApplicantToCommunityDto extends EntityHelperDto {
   community: CommunityDto;
 
   @AutoMap(() => UserDto)
-  subscribers: UserDto;
+  subscriber: UserDto;
 
   @AutoMap()
   status: CommunitySubscriptionStatusEnum;

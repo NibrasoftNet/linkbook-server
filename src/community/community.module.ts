@@ -18,4 +18,4 @@ import { FilesModule } from '../files/files.module';
   controllers: [CommunityController],
   providers: [CommunityService, CommunitySerializationProfile],
 })
-export class DonationModule {}
+export class CommunityModule {}

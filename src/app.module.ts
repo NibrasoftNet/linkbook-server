@@ -57,6 +57,9 @@ import { GraphileWorkerModule } from 'nestjs-graphile-worker';
 import { NotificationModule } from './notification/notification.module';
 import { NotificationTask } from './utils/graphile-worker/notification-task';
 import { NotificationCronTask } from './utils/graphile-worker/notification-cronjob';
+import { CommunityFeedModule } from './community-feed/community-feed.module';
+import { CommunityModule } from './community/community.module';
+import { ApplicantToCommunityModule } from './applicant-to-community/applicant-to-community.module';
 
 @Module({
   imports: [
@@ -179,6 +182,9 @@ import { NotificationCronTask } from './utils/graphile-worker/notification-cronj
     TestimonialsModule,
     WinstonLoggerModule,
     NotificationModule,
+    CommunityModule,
+    ApplicantToCommunityModule,
+    CommunityFeedModule,
   ],
 
   providers: [

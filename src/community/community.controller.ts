@@ -11,7 +11,7 @@ import {
   HttpCode,
   HttpStatus,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
 } from '@nestjs/common';
 import { CommunityService } from './community.service';
 import {
@@ -32,7 +32,6 @@ import { InjectMapper, MapInterceptor } from 'automapper-nestjs';
 import { Mapper } from 'automapper-core';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ParseFormdataPipe } from '../utils/pipes/parse-formdata.pipe';
-import { Public } from '../utils/validators/public.decorator';
 import { Utils } from '../utils/utils';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { Community } from './entities/community.entity';
@@ -75,7 +74,7 @@ export class CommunityController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async create(
-    @UploadedFiles() file: Express.Multer.File | Express.MulterS3.File,
+    @UploadedFile() file: Express.Multer.File | Express.MulterS3.File,
     @Request() request,
     @Body('data', ParseFormdataPipe) data,
   ) {
@@ -93,24 +92,8 @@ export class CommunityController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @HttpCode(HttpStatus.OK)
-  @Get('list/subscribed')
+  @Get()
   async findAll(
-    @Paginate() query: PaginateQuery,
-  ): Promise<PaginatedDto<Community, CommunityDto>> {
-    const communities = await this.communityService.findAll(query);
-    return new PaginatedDto<Community, CommunityDto>(
-      this.mapper,
-      communities,
-      Community,
-      CommunityDto,
-    );
-  }
-
-  @ApiPaginationQuery(communityPaginationConfig)
-  @Get('list/unsubscribed')
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  async findAllUnsubscribed(
     @Paginate() query: PaginateQuery,
   ): Promise<PaginatedDto<Community, CommunityDto>> {
     const communities = await this.communityService.findAll(query);
@@ -146,16 +129,17 @@ export class CommunityController {
   @ApiPaginationQuery(communityPaginationConfig)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
-  @Get('list/others')
+  @Get('list-private-unsubscribed/_me')
   @HttpCode(HttpStatus.OK)
-  async findAllOthers(
+  async findAllPrivateUnsubscribedMe(
     @Request() request,
     @Paginate() query: PaginateQuery,
   ): Promise<PaginatedDto<Community, CommunityDto>> {
-    const communities = await this.communityService.findAllOthers(
-      request.user,
-      query,
-    );
+    const communities =
+      await this.communityService.findAllPrivateUnsubscribedMe(
+        request.user,
+        query,
+      );
     return new PaginatedDto<Community, CommunityDto>(
       this.mapper,
       communities,
@@ -196,6 +180,7 @@ export class CommunityController {
       { id: +id },
       {
         creator: true,
+        subscribers: { subscriber: true },
       },
     );
   }

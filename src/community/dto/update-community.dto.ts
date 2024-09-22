@@ -1,51 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateAddressDto } from '../../address/dto/create-address.dto';
-import { UpdateProductDto } from '../../product/dto/update-product.dto';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class UpdateCommunityDto {
-  @ApiProperty({ example: 'My donation' })
+  @ApiProperty({ example: 'My com' })
   @IsOptional()
   @IsString()
-  description?: string;
+  name?: string;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ example: 'My bio' })
   @IsOptional()
-  @IsNumber()
-  quantity?: number;
-
-  @ApiProperty()
-  @IsOptional()
-  @Type(() => UpdateProductDto)
-  @ValidateNested()
-  product?: UpdateProductDto;
+  @IsString()
+  bio?: string;
 
   @ApiProperty()
   @IsOptional()
-  @Type(() => CreateAddressDto)
-  @ValidateNested()
-  address?: CreateAddressDto;
+  @IsBoolean()
+  isPrivate?: boolean;
 
   constructor({
-    description,
-    quantity,
-    product,
-    address,
+    name,
+    bio,
+    isPrivate,
   }: {
-    description?: string | undefined;
-    quantity?: number | undefined;
-    product?: UpdateProductDto | undefined;
-    address?: CreateAddressDto | undefined;
+    name?: string | undefined;
+    bio?: string | undefined;
+    isPrivate?: boolean | undefined;
   }) {
-    this.description = description;
-    this.quantity = quantity;
-    this.product = product;
-    this.address = address;
+    this.name = name;
+    this.bio = bio;
+    this.isPrivate = isPrivate;
   }
 }

@@ -4,13 +4,7 @@ import { ApplicantToSwap } from '../entities/applicant-to-swap.entity';
 export const applicantToSwapPaginationConfig: PaginateConfig<ApplicantToSwap> =
   {
     defaultSortBy: [['createdAt', 'DESC']],
-    relations: [
-      'swap',
-      'applicant',
-      'product',
-      'product.image',
-      'swap.creator',
-    ],
+    relations: ['community', 'subscriber', 'community.creator'],
     searchableColumns: ['status'],
     sortableColumns: ['createdAt', 'updatedAt', 'status'],
     defaultLimit: 50,

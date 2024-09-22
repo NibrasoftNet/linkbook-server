@@ -51,14 +51,12 @@ export class FilesService {
         `{"file": "${this.i18n.t('file.failedUpload', { lang: I18nContext.current()?.lang })}"}`,
       );
     }
-    console.log('file', file);
     const path = {
       local: `${this.configService.get('app.backendDomain', { infer: true })}/${this.configService.get('app.apiPrefix', { infer: true })}/v1/${
         file.path
       }`,
       s3: (file as Express.MulterS3.File).location,
     };
-    console.log('ppppp', path);
     return this.fileRepository.save(
       this.fileRepository.create({
         path: path[

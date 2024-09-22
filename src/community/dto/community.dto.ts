@@ -24,7 +24,7 @@ export class CommunityDto extends EntityHelperDto {
   invitationCode: string;
 
   @AutoMap(() => [ApplicantToCommunityDto])
-  applicants: ApplicantToCommunityDto[];
+  subscribers: ApplicantToCommunityDto[];
 
   @AutoMap(() => FileDto)
   image: FileDto;

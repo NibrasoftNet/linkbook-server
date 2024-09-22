@@ -57,11 +57,18 @@ export class CommunityService {
     return await paginate(query, queryBuilder, communityPaginationConfig);
   }
 
-  async findAllOthers(userJwtPayload: JwtPayloadType, query: PaginateQuery) {
+  async findAllPrivateUnsubscribedMe(
+    userJwtPayload: JwtPayloadType,
+    query: PaginateQuery,
+  ) {
     const queryBuilder = this.communityRepository
       .createQueryBuilder('community')
-      .leftJoinAndSelect('community.creator', 'creator')
-      .where('creator.id <> :id', { id: userJwtPayload.id });
+      .leftJoinAndSelect('community.subscribers', 'subscribers')
+      .leftJoinAndSelect('subscribers.subscriber', 'subscriber')
+      .where('community.isPrivate = :private', { private: true })
+      .andWhere('(subscriber.id IS NULL OR subscriber.id != :id)', {
+        id: userJwtPayload.id,
+      });
 
     return await paginate(query, queryBuilder, communityPaginationConfig);
   }
@@ -103,7 +110,7 @@ export class CommunityService {
     const community = await this.findOneOrFail({ id });
     const { ...filteredCommunityDto } = updateCommunityDto;
     Object.assign(community, filteredCommunityDto);
-    return await this.communityRepository.save(Community);
+    return await this.communityRepository.save(community);
   }
 
   async remove(id: number) {
