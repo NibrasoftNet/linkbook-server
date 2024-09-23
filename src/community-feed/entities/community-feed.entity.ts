@@ -10,6 +10,7 @@ import EntityHelper from '../../utils/entities/entity-helper';
 import { User } from '../../users/entities/user.entity';
 import { AutoMap } from 'automapper-classes';
 import { FileEntity } from '../../files/entities/file.entity';
+import { Community } from '../../community/entities/community.entity';
 
 @Entity()
 export class CommunityFeed extends EntityHelper {
@@ -32,6 +33,10 @@ export class CommunityFeed extends EntityHelper {
   @AutoMap(() => User)
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   creator: User;
+
+  @AutoMap(() => Community)
+  @ManyToOne(() => Community, { onDelete: 'CASCADE' })
+  community: Community;
 
   @AutoMap(() => [FileEntity])
   @ManyToMany(() => FileEntity, (file) => file, {

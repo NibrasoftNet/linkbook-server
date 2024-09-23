@@ -1,5 +1,11 @@
 import { AutomapperProfile, InjectMapper } from 'automapper-nestjs';
-import { createMap, Mapper, MappingProfile } from 'automapper-core';
+import {
+  createMap,
+  forMember,
+  ignore,
+  Mapper,
+  MappingProfile,
+} from 'automapper-core';
 import { CommunityFeed } from '../entities/community-feed.entity';
 import { CommunityFeedDto } from '../dto/community-feed.dto';
 
@@ -10,7 +16,12 @@ export class CommunityFeedSerializationProfile extends AutomapperProfile {
 
   override get profile(): MappingProfile {
     return (mapper) => {
-      createMap(mapper, CommunityFeed, CommunityFeedDto);
+      createMap(
+        mapper,
+        CommunityFeed,
+        CommunityFeedDto,
+        forMember((destination) => destination.community.subscribers, ignore()),
+      );
     };
   }
 }

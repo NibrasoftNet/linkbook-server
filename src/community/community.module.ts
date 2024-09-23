@@ -17,5 +17,6 @@ import { FilesModule } from '../files/files.module';
   ],
   controllers: [CommunityController],
   providers: [CommunityService, CommunitySerializationProfile],
+  exports: [CommunityService],
 })
 export class CommunityModule {}

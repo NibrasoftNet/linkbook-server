@@ -5,6 +5,7 @@ import { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityFeed } from './entities/community-feed.entity';
 import {
+  Brackets,
   DeepPartial,
   FindOptionsRelations,
   FindOptionsWhere,
@@ -16,6 +17,8 @@ import { paginate, PaginateQuery } from 'nestjs-paginate';
 import { communityFeedPaginationConfig } from './config/comminity-feed-pagination-config';
 import { CommunityFeedDto } from './dto/community-feed.dto';
 import { NullableType } from '../utils/types/nullable.type';
+import { CommunityService } from '../community/community.service';
+import { CommunitySubscriptionStatusEnum } from '../applicant-to-community/enums/community-subscription-status.enum';
 
 @Injectable()
 export class CommunityFeedService {
@@ -24,10 +27,12 @@ export class CommunityFeedService {
     private readonly communityFeedRepository: Repository<CommunityFeed>,
     private readonly filesService: FilesService,
     private readonly usersService: UsersService,
+    private readonly communityService: CommunityService,
   ) {}
 
   async create(
     userJwtPayload: JwtPayloadType,
+    id: number,
     createCommunityFeedDto: CreateCommunityFeedDto,
     files?: Array<Express.Multer.File | Express.MulterS3.File>,
   ): Promise<CommunityFeed> {
@@ -37,6 +42,7 @@ export class CommunityFeedService {
     communityFeed.creator = await this.usersService.findOneOrFail({
       id: userJwtPayload.id,
     });
+    communityFeed.community = await this.communityService.findOneOrFail({ id });
     await this.communityFeedRepository.save(communityFeed);
     if (files) {
       communityFeed.image = await this.filesService.uploadMultipleFiles(files);
@@ -50,6 +56,38 @@ export class CommunityFeedService {
       this.communityFeedRepository,
       communityFeedPaginationConfig,
     );
+  }
+
+  async findAllMe(userJwtPayload: JwtPayloadType, query: PaginateQuery) {
+    const queryBuilder = this.communityFeedRepository
+      .createQueryBuilder('communityFeed')
+      .leftJoinAndSelect('communityFeed.community', 'community')
+      .leftJoinAndSelect('community.subscribers', 'subscribers')
+      .leftJoinAndSelect('community.image', 'image')
+      .leftJoinAndSelect('subscribers.subscriber', 'subscriber')
+      .where(
+        new Brackets((qb) => {
+          // Public communities are always included
+          qb.where('community.isPrivate = :isNotPublic', {
+            isNotPublic: false,
+          })
+            // Private communities where the user is an accepted subscriber
+            .orWhere(
+              new Brackets((privateQb) => {
+                privateQb
+                  .where('community.isPrivate = :isPrivate', {
+                    isPrivate: true,
+                  })
+                  .andWhere('subscribers.status = :status', {
+                    status: CommunitySubscriptionStatusEnum.ACCEPTED,
+                  })
+                  .andWhere('subscriber.id = :id', { id: userJwtPayload.id });
+              }),
+            );
+        }),
+      );
+
+    return await paginate(query, queryBuilder, communityFeedPaginationConfig);
   }
 
   async findOne(

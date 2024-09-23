@@ -12,6 +12,7 @@ import {
   HttpStatus,
   UploadedFiles,
   Request,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CommunityFeedService } from './community-feed.service';
 import { CreateCommunityFeedDto } from './dto/create-community-feed.dto';
@@ -72,9 +73,10 @@ export class CommunityFeedController {
   @UseInterceptors(FilesInterceptor('files'))
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @HttpCode(HttpStatus.CREATED)
-  @Post()
+  @Post(':id')
   async create(
     @Request() request,
+    @Param('id', ParseIntPipe) id: number,
     @Body('data', ParseFormdataPipe) data,
     @UploadedFiles() files?: Array<Express.Multer.File | Express.MulterS3.File>,
   ): Promise<CommunityFeed> {
@@ -82,6 +84,7 @@ export class CommunityFeedController {
     await Utils.validateDtoOrFail(createCommunityFeedDto);
     return await this.communityFeedService.create(
       request.user,
+      id,
       createCommunityFeedDto,
       files,
     );
@@ -93,6 +96,23 @@ export class CommunityFeedController {
   @Get()
   async findAll(@Paginate() query: PaginateQuery) {
     const feeds = await this.communityFeedService.findAll(query);
+    return new PaginatedDto<CommunityFeed, CommunityFeedDto>(
+      this.mapper,
+      feeds,
+      CommunityFeed,
+      CommunityFeedDto,
+    );
+  }
+
+  @ApiPaginationQuery(communityFeedPaginationConfig)
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Get('_me')
+  async findAllMe(@Request() request, @Paginate() query: PaginateQuery) {
+    const feeds = await this.communityFeedService.findAllMe(
+      request.user,
+      query,
+    );
     return new PaginatedDto<CommunityFeed, CommunityFeedDto>(
       this.mapper,
       feeds,
