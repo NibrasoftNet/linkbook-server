@@ -62,6 +62,17 @@ export class CommunityFeedService {
     const queryBuilder = this.communityFeedRepository
       .createQueryBuilder('communityFeed')
       .leftJoinAndSelect('communityFeed.community', 'community')
+      .leftJoinAndSelect('community.creator', 'creator')
+      .leftJoinAndSelect('community.image', 'image')
+      .where('creator.id = :id', { id: userJwtPayload.id });
+
+    return await paginate(query, queryBuilder, communityFeedPaginationConfig);
+  }
+
+  async findAllRelatedMe(userJwtPayload: JwtPayloadType, query: PaginateQuery) {
+    const queryBuilder = this.communityFeedRepository
+      .createQueryBuilder('communityFeed')
+      .leftJoinAndSelect('communityFeed.community', 'community')
       .leftJoinAndSelect('community.subscribers', 'subscribers')
       .leftJoinAndSelect('community.image', 'image')
       .leftJoinAndSelect('subscribers.subscriber', 'subscriber')

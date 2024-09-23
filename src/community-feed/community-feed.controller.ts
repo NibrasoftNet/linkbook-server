@@ -107,6 +107,23 @@ export class CommunityFeedController {
   @ApiPaginationQuery(communityFeedPaginationConfig)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @HttpCode(HttpStatus.OK)
+  @Get('related/_me')
+  async findAllRelatedMe(@Request() request, @Paginate() query: PaginateQuery) {
+    const feeds = await this.communityFeedService.findAllRelatedMe(
+      request.user,
+      query,
+    );
+    return new PaginatedDto<CommunityFeed, CommunityFeedDto>(
+      this.mapper,
+      feeds,
+      CommunityFeed,
+      CommunityFeedDto,
+    );
+  }
+
+  @ApiPaginationQuery(communityFeedPaginationConfig)
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
+  @HttpCode(HttpStatus.OK)
   @Get('_me')
   async findAllMe(@Request() request, @Paginate() query: PaginateQuery) {
     const feeds = await this.communityFeedService.findAllMe(
