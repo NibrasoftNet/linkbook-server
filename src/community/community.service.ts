@@ -3,6 +3,7 @@ import { UpdateCommunityDto } from './dto/update-community.dto';
 import { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  Brackets,
   DeepPartial,
   FindOptionsRelations,
   FindOptionsWhere,
@@ -15,6 +16,7 @@ import { Community } from './entities/community.entity';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { communityPaginationConfig } from './config/community-pagination-config';
 import { FilesService } from '../files/files.service';
+import { CommunitySubscriptionStatusEnum } from '../applicant-to-community/enums/community-subscription-status.enum';
 
 @Injectable()
 export class CommunityService {
@@ -46,6 +48,38 @@ export class CommunityService {
       this.communityRepository,
       communityPaginationConfig,
     );
+  }
+
+  async findAllCommunities(
+    userJwtPayload: JwtPayloadType,
+  ): Promise<{ label: string; value: string }[]> {
+    return await this.communityRepository
+      .createQueryBuilder('community')
+      .leftJoinAndSelect('community.subscribers', 'subscribers')
+      .leftJoinAndSelect('subscribers.subscriber', 'subscriber')
+      .where(
+        new Brackets((qb) => {
+          // Public communities are always included
+          qb.where('community.isPrivate = :isNotPublic', {
+            isNotPublic: false,
+          })
+            // Private communities where the user is an accepted subscriber
+            .orWhere(
+              new Brackets((privateQb) => {
+                privateQb
+                  .where('community.isPrivate = :isPrivate', {
+                    isPrivate: true,
+                  })
+                  .andWhere('subscribers.status = :status', {
+                    status: CommunitySubscriptionStatusEnum.ACCEPTED,
+                  })
+                  .andWhere('subscriber.id = :id', { id: userJwtPayload.id });
+              }),
+            );
+        }),
+      )
+      .select('DISTINCT community.name AS label, community.id AS value')
+      .getRawMany();
   }
 
   async findAllMe(userJwtPayload: JwtPayloadType, query: PaginateQuery) {

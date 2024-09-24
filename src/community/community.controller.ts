@@ -105,6 +105,15 @@ export class CommunityController {
     );
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Get('find/all-communities')
+  @HttpCode(HttpStatus.OK)
+  async findAllCommunities(@Request() request) {
+    return await this.communityService.findAllCommunities(request.user);
+  }
+
   @ApiPaginationQuery(communityPaginationConfig)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)

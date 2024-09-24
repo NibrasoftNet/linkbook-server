@@ -32,18 +32,20 @@ export class CommunityFeedService {
 
   async create(
     userJwtPayload: JwtPayloadType,
-    id: number,
     createCommunityFeedDto: CreateCommunityFeedDto,
     files?: Array<Express.Multer.File | Express.MulterS3.File>,
   ): Promise<CommunityFeed> {
+    const { communityId, ...filteredCreateCommunityFeedDto } =
+      createCommunityFeedDto;
     const communityFeed = this.communityFeedRepository.create(
-      createCommunityFeedDto as DeepPartial<CommunityFeed>,
+      filteredCreateCommunityFeedDto as DeepPartial<CommunityFeed>,
     );
     communityFeed.creator = await this.usersService.findOneOrFail({
       id: userJwtPayload.id,
     });
-    communityFeed.community = await this.communityService.findOneOrFail({ id });
-    await this.communityFeedRepository.save(communityFeed);
+    communityFeed.community = await this.communityService.findOneOrFail({
+      id: communityId,
+    });
     if (files) {
       communityFeed.image = await this.filesService.uploadMultipleFiles(files);
     }
