@@ -1,17 +1,23 @@
 import { AutoMap } from 'automapper-classes';
-import { FileEntity } from '../../files/entities/file.entity';
 import { ProductDto } from '../../product/dto/product.dto';
+import { Exclude, Expose } from 'class-transformer';
+import { FileDto } from '../../files/dto/file.dto';
 
+@Exclude()
 export class CategoryDto {
   @AutoMap()
+  @Expose({ groups: ['USER', 'ADMIN', 'STOREADMIN'] })
   id: number;
 
   @AutoMap()
+  @Expose({ groups: ['USER', 'ADMIN', 'STOREADMIN'] })
   name: string;
 
-  @AutoMap(() => FileEntity)
-  image: string;
+  @AutoMap(() => FileDto)
+  @Expose({ groups: ['USER', 'ADMIN', 'STOREADMIN'] })
+  image: FileDto;
 
-  @AutoMap(() => ProductDto)
-  products: ProductDto;
+  @Expose({ groups: ['ADMIN'] })
+  @AutoMap(() => [ProductDto])
+  products: ProductDto[];
 }

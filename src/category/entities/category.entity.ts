@@ -30,7 +30,7 @@ export class Category extends EntityHelper {
   @JoinColumn()
   image?: FileEntity;
 
-  @AutoMap(() => Product)
+  @AutoMap(() => [Product])
   @OneToMany(() => Product, (product) => product.category, {
     eager: true,
     nullable: true,

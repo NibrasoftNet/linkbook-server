@@ -145,16 +145,19 @@ export class SwapController {
     return new PaginatedDto<Swap, SwapDto>(this.mapper, swaps, Swap, SwapDto);
   }
 
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(MapInterceptor(Swap, SwapDto))
-  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.swapService.findOne(
       { id: +id },
       {
-        applicants: { applicant: true, product: { image: true } },
-        product: { image: true },
+        applicants: {
+          applicant: true,
+          product: { image: true },
+        },
+        product: { image: true, category: true },
         creator: true,
       },
     );

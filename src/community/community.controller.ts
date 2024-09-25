@@ -201,9 +201,9 @@ export class CommunityController {
   @HttpCode(HttpStatus.OK)
   @Patch(':id')
   async update(@Param('id') id: string, @Body('data', ParseFormdataPipe) data) {
-    const updateDonationDto = new UpdateCommunityDto(data);
-    await Utils.validateDtoOrFail(updateDonationDto);
-    return this.communityService.update(+id, updateDonationDto);
+    const updateCommunityDto = new UpdateCommunityDto(data);
+    await Utils.validateDtoOrFail(updateCommunityDto);
+    return this.communityService.update(+id, updateCommunityDto);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

@@ -39,7 +39,7 @@ export class MailService {
       to: mailData.to,
       subject: verifyOtpTitle,
       text: verifyOtpTitle,
-      templatePath: path.join(__dirname, 'mail-templates', 'activation.hbs'),
+      templatePath: path.join(__dirname, 'templates', 'activation.hbs'),
       context: {
         title: verifyOtpTitle,
         actionTitle: verifyOtpTitle,
@@ -75,11 +75,7 @@ export class MailService {
       to: mailData.to,
       subject: resetPasswordTitle,
       text: resetPasswordTitle,
-      templatePath: path.join(
-        __dirname,
-        'mail-templates',
-        'reset-password.hbs',
-      ),
+      templatePath: path.join(__dirname, 'templates', 'reset-password.hbs'),
       context: {
         title: resetPasswordTitle,
         actionTitle: resetPasswordTitle,
@@ -161,7 +157,7 @@ export class MailService {
       to: mailData.to,
       subject: verifyOtpTitle,
       text: verifyOtpTitle,
-      templatePath: path.join(__dirname, 'mail-templates', 'activation.hbs'),
+      templatePath: path.join(__dirname, 'templates', 'activation.hbs'),
       context: {
         title: verifyOtpTitle,
         actionTitle: verifyOtpTitle,

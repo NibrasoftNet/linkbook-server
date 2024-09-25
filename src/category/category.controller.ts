@@ -23,6 +23,8 @@ import { InjectMapper, MapInterceptor } from 'automapper-nestjs';
 import { categoryPaginationConfig } from './config/category-pagination-config';
 import { NullableType } from '../utils/types/nullable.type';
 import { HttpResponseException } from '../utils/exceptions/http-response.exception';
+import { Roles } from '../roles/roles.decorator';
+import { RoleEnum } from '../roles/roles.enum';
 
 @ApiTags('Category')
 @Controller({ version: '1', path: 'category' })
@@ -65,11 +67,12 @@ export class CategoryController {
     }
   }
 
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MapInterceptor(Category, CategoryDto))
   async findOne(@Param('id') id: string): Promise<NullableType<Category>> {
-    return await this.categoryService.findOne({ id: +id });
+    return await this.categoryService.findOne({ id: +id }, { products: true });
   }
 
   @Patch(':id')

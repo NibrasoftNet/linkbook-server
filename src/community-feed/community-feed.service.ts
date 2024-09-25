@@ -105,7 +105,7 @@ export class CommunityFeedService {
 
   async findOne(
     field: FindOptionsWhere<CommunityFeed>,
-    relations?: FindOptionsRelations<CommunityFeedDto>,
+    relations?: FindOptionsRelations<CommunityFeed>,
   ): Promise<NullableType<CommunityFeed>> {
     return await this.communityFeedRepository.findOne({
       where: field,
@@ -125,7 +125,12 @@ export class CommunityFeedService {
 
   async update(id: number, updateCommunityFeedDto: UpdateCommunityFeedDto) {
     const communityFeed = await this.findOneOrFail({ id });
-    Object.assign(communityFeed, updateCommunityFeedDto);
+    const { communityId, ...filteredUpdateCommunityFeedDto } =
+      updateCommunityFeedDto;
+    Object.assign(communityFeed, filteredUpdateCommunityFeedDto);
+    communityFeed.community = await this.communityService.findOneOrFail({
+      id: communityId,
+    });
     return await this.communityFeedRepository.save(communityFeed);
   }
 

@@ -137,7 +137,7 @@ import { ApplicantToCommunityModule } from './applicant-to-community/applicant-t
           from: '"no-reploy" <helpdesk@linkbook.fr>',
         },
         template: {
-          dir: __dirname + '/mail/mail-templates',
+          dir: __dirname + '/mail/templates',
           // adapter: new HandlebarsAdapter(),
           options: {
             strict: true,

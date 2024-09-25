@@ -1,30 +1,38 @@
 services:
   postgres:
     image: postgis/postgis:16-3.4-alpine
-    volumes:
-      - boilerplate-db:/var/lib/postgresql/data
-    expose:
+    container_name: linkbook-postgres-prod
+    ports:
       - ${DATABASE_PORT}:5432
+    volumes:
+      - linkbook-db-prod:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
-
   maildev:
     build:
       context: .
       dockerfile: maildev.Dockerfile
-    expose:
-      - 1080
-      - 1025
-
-
-
-  api:
+    ports:
+      - ${MAIL_CLIENT_PORT}:1080
+      - ${MAIL_PORT}:1025
+  adminer:
+    image: adminer
+    container_name: linkbook-adminer-prod
+    restart: always
+    ports:
+      - ${ADMINER_PORT}:8080
+  backend:
     build:
       context: .
-      dockerfile: e2e.Dockerfile
-
-
+      dockerfile: server.Dockerfile
+    container_name: linkbook-server
+    ports:
+      - ${APP_PORT}:4001
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://root:secret@postgres:5432/linkbook-db-prod
 volumes:
-  boilerplate-db:
+  linkbook-db-prod:

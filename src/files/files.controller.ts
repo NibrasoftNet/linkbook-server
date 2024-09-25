@@ -90,7 +90,7 @@ export class FilesController {
   @Get(':path')
   download(@Param('path') path, @Response() response) {
     try {
-      return response.sendFile(path, { root: './files' });
+      return response.sendFile(path, { root: './uploads' });
     } catch (error) {
       throw new HttpResponseException(error);
     }

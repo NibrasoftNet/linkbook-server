@@ -78,7 +78,6 @@ export class CommunityFeedController {
     @Body('data', ParseFormdataPipe) data,
     @UploadedFiles() files?: Array<Express.Multer.File | Express.MulterS3.File>,
   ): Promise<CommunityFeed> {
-    console.log('qafddafds', data);
     const createCommunityFeedDto = new CreateCommunityFeedDto(data);
     await Utils.validateDtoOrFail(createCommunityFeedDto);
     return await this.communityFeedService.create(
@@ -141,16 +140,20 @@ export class CommunityFeedController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.communityFeedService.findOne({ id: +id });
+    return this.communityFeedService.findOne(
+      { id: +id },
+      { community: { subscribers: true } },
+    );
   }
 
   @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @UseInterceptors(MapInterceptor(CommunityFeed, CommunityFeedDto))
+  @UseInterceptors(FilesInterceptor('data'))
+  @HttpCode(HttpStatus.OK)
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateCommunityFeedDto: UpdateCommunityFeedDto,
-  ) {
+  async update(@Param('id') id: string, @Body('data', ParseFormdataPipe) data) {
+    const updateCommunityFeedDto = new UpdateCommunityFeedDto(data);
+    await Utils.validateDtoOrFail(updateCommunityFeedDto);
     return await this.communityFeedService.update(+id, updateCommunityFeedDto);
   }
 

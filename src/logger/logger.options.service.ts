@@ -25,7 +25,7 @@ export class LoggerOptionService implements ILoggerOptionService {
             winston.format.json(),
             winston.format.timestamp(),
             winston.format.errors({ stacks: true }),
-            nestWinstonModuleUtilities.format.nestLike('trashback', {
+            nestWinstonModuleUtilities.format.nestLike('Linkbook', {
               colors: true,
               prettyPrint: true,
               appName: true,

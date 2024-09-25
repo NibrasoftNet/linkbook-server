@@ -206,9 +206,9 @@ export class DonationController {
     );
   }
 
+  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @UseInterceptors(MapInterceptor(Donation, DonationDto))
-  @Roles(RoleEnum.STOREADMIN, RoleEnum.USER, RoleEnum.ADMIN)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -216,7 +216,7 @@ export class DonationController {
       { id: +id },
       {
         applicants: { applicant: true },
-        product: { image: true },
+        product: { image: true, category: true },
         creator: true,
       },
     );

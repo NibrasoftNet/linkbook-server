@@ -52,8 +52,8 @@ export class FilesService {
       );
     }
     const path = {
-      local: `${this.configService.get('app.backendDomain', { infer: true })}/${this.configService.get('app.apiPrefix', { infer: true })}/v1/${
-        file.path
+      local: `${this.configService.get('app.backendDomain', { infer: true })}/${this.configService.get('app.apiPrefix', { infer: true })}/v1/files/${
+        file.filename
       }`,
       s3: (file as Express.MulterS3.File).location,
     };
@@ -79,7 +79,7 @@ export class FilesService {
         files.map(async (file) => {
           const path = {
             local: `${this.configService.get('app.backendDomain', { infer: true })}/${this.configService.get('app.apiPrefix', { infer: true })}/v1/${
-              file.path
+              file.filename
             }`,
             s3: (file as Express.MulterS3.File).location,
           };

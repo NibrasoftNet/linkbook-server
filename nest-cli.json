@@ -9,11 +9,12 @@
         "watchAssets": true
       },
       {
-        "include": "**/*.json",
+        "include": "src/**/*.json",
+        "outDir": "dist/",
         "watchAssets": true
       },
       {
-        "include": "mail/mail-templates/**/*",
+        "include": "mail/templates/**/*",
         "watchAssets": true
       }
     ]
