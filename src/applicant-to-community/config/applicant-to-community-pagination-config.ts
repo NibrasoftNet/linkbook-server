@@ -4,7 +4,7 @@ import { ApplicantToCommunity } from '../entities/applicant-to-community.entity'
 export const applicantToCommunityPaginationConfig: PaginateConfig<ApplicantToCommunity> =
   {
     defaultSortBy: [['createdAt', 'DESC']],
-    relations: ['community', 'community.image', 'creator'],
+    relations: ['community', 'community.image'],
     searchableColumns: ['status'],
     sortableColumns: ['createdAt', 'updatedAt', 'status'],
     defaultLimit: 50,

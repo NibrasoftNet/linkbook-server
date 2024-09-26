@@ -37,5 +37,5 @@ lerna-debug.log*
 .data
 /uploads
 .env
-.env.local
+.local.env
 /ormconfig.json
