@@ -124,7 +124,7 @@ export class FilesService {
     // Create new path for updated file
     const path = {
       local: `${this.configService.get('app.backendDomain', { infer: true })}/${this.configService.get('app.apiPrefix', { infer: true })}/v1/files/${
-        file.path
+        file.filename
       }`,
       s3: (file as Express.MulterS3.File).location,
     };
