@@ -29,7 +29,7 @@ const whitelist = [
   'http://127.0.0.1:4000',
   'http://127.0.0.1:3002',
   'http://127.0.0.1:4001',
-  'http://147.79.117.125/4000',
+  'http://147.79.117.125:4000',
   'http://backend-staging.skaners.fr',
   'http://staging.skaners.fr',
 ];
