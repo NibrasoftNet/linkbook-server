@@ -170,7 +170,7 @@ export class FilesService {
    * @param {string} key local file key
    */
   deleteFileFromLocal(key: string): boolean {
-    const filePath = path.join(process.cwd(), 'files', key);
+    const filePath = path.join(process.cwd(), 'uploads', key);
     fs.unlink(filePath, (err) => {
       if (err) {
         throw new PreconditionFailedException(

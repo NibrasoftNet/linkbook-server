@@ -34,7 +34,7 @@ export class Community extends EntityHelper {
   creator: User;
 
   @AutoMap()
-  @Column({ default: true })
+  @Column({ default: false })
   isPrivate: boolean;
 
   @AutoMap()
