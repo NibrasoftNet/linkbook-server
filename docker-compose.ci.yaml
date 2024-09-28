@@ -35,6 +35,6 @@ services:
     environment:
       DATABASE_URL: postgres://root:secret@postgres:5432/linkbook-db-prod
     volumes:
-      - uploads:/app/uploads
+      - ./uploads:/app/uploads
 volumes:
   linkbook-db-prod:
