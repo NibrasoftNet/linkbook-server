@@ -54,9 +54,8 @@ services:
 
 networks:
   linkbookNet:
-    external: {
+    external:
       name: linkbookNetwork
-    }
   linkbookServerNet:
     name: linkbookServerNetwork
     internal: true
