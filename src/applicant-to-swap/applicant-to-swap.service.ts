@@ -63,6 +63,7 @@ export class ApplicantToSwapService {
     const product = new CreateProductDto(createApplicantToSwapDto.product);
     product.type = ProductTypeEnum.SWAPS;
     await Utils.validateDtoOrFail(product);
+    console.log('esxcv', files);
     applicant.product = await this.productService.create(files, product);
     return await this.applicantToSwapRepository.save(applicant);
   }

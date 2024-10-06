@@ -81,6 +81,7 @@ export class ApplicantToSwapController {
     @UploadedFiles() files: Array<Express.Multer.File | Express.MulterS3.File>,
     @Body('data', ParseFormdataPipe) data,
   ) {
+    console.log('esxcv', files);
     const createApplicantToSwapDto = new CreateApplicantToSwapDto(data);
     await Utils.validateDtoOrFail(createApplicantToSwapDto);
     return await this.applicantToSwapService.create(

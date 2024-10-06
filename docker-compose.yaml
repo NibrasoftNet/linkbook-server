@@ -11,9 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     env_file:
-      - ./.local.env
-
-
+      - .local.env
   maildev:
     build:
       context: .
@@ -21,13 +19,15 @@ services:
     ports:
       - ${MAIL_CLIENT_PORT}:1080
       - ${MAIL_PORT}:1025
-
+    env_file:
+      - .local.env
   adminer:
     image: adminer
     container_name: linkbook-adminer
     restart: always
     ports:
       - 8082:8080
-
+    env_file:
+      - .local.env
 volumes:
   linkbook-db:

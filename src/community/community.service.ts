@@ -55,6 +55,7 @@ export class CommunityService {
   ): Promise<{ label: string; value: string }[]> {
     return await this.communityRepository
       .createQueryBuilder('community')
+      .leftJoinAndSelect('community.creator', 'creator')
       .leftJoinAndSelect('community.subscribers', 'subscribers')
       .leftJoinAndSelect('subscribers.subscriber', 'subscriber')
       .where(
@@ -70,10 +71,20 @@ export class CommunityService {
                   .where('community.isPrivate = :isPrivate', {
                     isPrivate: true,
                   })
-                  .andWhere('subscribers.status = :status', {
-                    status: CommunitySubscriptionStatusEnum.ACCEPTED,
-                  })
-                  .andWhere('subscriber.id = :id', { id: userJwtPayload.id });
+                  .andWhere(
+                    new Brackets((subPrivateQb) => {
+                      subPrivateQb
+                        .andWhere('subscribers.status = :status', {
+                          status: CommunitySubscriptionStatusEnum.ACCEPTED,
+                        })
+                        .andWhere('subscriber.id = :id', {
+                          id: userJwtPayload.id,
+                        })
+                        .orWhere('creator.id = :creatorId', {
+                          creatorId: userJwtPayload.id,
+                        });
+                    }),
+                  );
               }),
             );
         }),
