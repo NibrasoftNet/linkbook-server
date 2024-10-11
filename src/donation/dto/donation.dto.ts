@@ -24,7 +24,7 @@ export class DonationDto extends EntityHelperDto {
   @AutoMap(() => AddressDto)
   address: AddressDto;
 
-  @AutoMap(() => ProductDto)
+  @AutoMap()
   quantity: number;
 
   @AutoMap(() => [ApplicantToDonationDto])
