@@ -25,6 +25,8 @@ const logger = new Logger('Linkbook-main');
 const whitelist = [
   'http://localhost:4000',
   'http://localhost:4001',
+  'http://127.0.0.1:4000',
+  'http://127.0.0.1:4001',
   'http://147.79.117.125:4000',
   'http://147.79.117.125:4001',
 ];

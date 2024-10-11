@@ -8,6 +8,7 @@ export const donationPaginationConfig: PaginateConfig<Donation> = {
     'creator.photo',
     'product',
     'product.category',
+    'product.image',
     'applicants',
     'applicants.applicant',
     'address',
