@@ -52,3 +52,6 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - "~/shared_vps/traefik/certs:/letsencrypt"
+networks:
+  traefikNetwork:
+    external: true
