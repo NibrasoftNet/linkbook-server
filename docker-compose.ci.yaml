@@ -52,7 +52,7 @@ services:
       - "traefik.http.routers.backend.tls.certresolver=le"
       - "traefik.http.routers.backend.tls.domains[0].main=backend.linkbook.store"
       - "traefik.http.middlewares.backend-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.backend.middlewares=backend-redirect"
+      #- "traefik.http.routers.backend.middlewares=backend-redirect"
     networks:
       - traefikNetwork
       - linkbookServerNetwork
