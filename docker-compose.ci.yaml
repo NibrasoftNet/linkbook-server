@@ -33,7 +33,7 @@ services:
       dockerfile: server.Dockerfile
     container_name: linkbook-server
     ports:
-      - "4001"
+      - ${APP_PORT}:4001
     depends_on:
       - postgres
     environment:
