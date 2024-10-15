@@ -38,5 +38,17 @@ services:
       - postgres
     environment:
       DATABASE_URL: postgres://root:secret@postgres:5432/linkbook-db-prod
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`backend.linkbook.store`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=le"
+      - "traefik.http.routers.frontend.tls.domains[0].main=backend.linkbook.store"
+      - "traefik.http.middlewares.frontend-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.frontend.middlewares=backend-redirect"
+    networks:
+      - traefikNetwork
     volumes:
       - ./uploads:/app/uploads
+      - "~/shared_vps/traefik/certs:/letsencrypt"
