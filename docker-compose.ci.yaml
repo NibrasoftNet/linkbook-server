@@ -46,13 +46,13 @@ services:
       DATABASE_URL: postgres://root:secret@postgres:5432/linkbook-db-prod
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`backend.linkbook.store`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.routers.backend.tls.certresolver=le"
-      - "traefik.http.routers.backend.tls.domains[0].main=backend.linkbook.store"
-      - "traefik.http.middlewares.backend-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.backend.middlewares=frontend-redirect"
+      - "traefik.http.routers.linkbook-backend.rule=Host(`backend.linkbook.store`)"
+      - "traefik.http.routers.linkbook-backend.entrypoints=websecure"
+      - "traefik.http.routers.linkbook-backend.tls=true"
+      - "traefik.http.routers.linkbook-backend.tls.certresolver=le"
+      - "traefik.http.routers.linkbook-backend.tls.domains[0].main=backend.linkbook.store"
+      - "traefik.http.middlewares.linkbook-backend-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.linkbook-backend.middlewares=backend-redirect"
     networks:
       - traefikNetwork
       - linkbookServerNetwork
