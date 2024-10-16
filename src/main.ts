@@ -30,6 +30,7 @@ const whitelist = [
   'http://147.79.117.125:4000',
   'http://147.79.117.125:4001',
   'https://staging.linkbook.store',
+  'https://backend.linkbook.store',
 ];
 
 async function bootstrap() {
