@@ -24,14 +24,16 @@ services:
       - ${MAIL_CLIENT_PORT}:1080
       - ${MAIL_PORT}:1025
     networks:
+      - traefikNetwork
       - linkbookServerNetwork
   adminer:
     image: adminer
     container_name: linkbook-adminer-prod
     restart: always
     ports:
-      - ${ADMINER_PORT}:8080
+      - 8082:8080
     networks:
+      - traefikNetwork
       - linkbookServerNetwork
   backend:
     build:
