@@ -168,8 +168,7 @@ export class AuthOauthService {
     userJwtPayload: JwtPayloadType,
     activateNotificationDto?: ActivateNotificationDto,
   ): Promise<LoginResponseType> {
-    console.log('aqwxcvb', activateNotificationDto);
-    const user = await this.usersService.findOne({
+    const user = await this.usersService.findOneOrFail({
       id: userJwtPayload.id,
     });
     if (activateNotificationDto?.notificationsToken) {

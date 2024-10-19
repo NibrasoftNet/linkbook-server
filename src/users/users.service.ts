@@ -22,6 +22,7 @@ import {
 import { FilesService } from '../files/files.service';
 import { AuthUpdateDto } from '../auth/dto/auth-update.dto';
 import { WinstonLoggerService } from '../logger/winston-logger.service';
+import { NullableType } from '../utils/types/nullable.type';
 
 @Injectable()
 export class UsersService {
@@ -62,8 +63,8 @@ export class UsersService {
     return await paginate(query, this.usersRepository, usersPaginationConfig);
   }
 
-  async findOne(fields: EntityCondition<User>): Promise<User> {
-    return await this.usersRepository.findOneOrFail({
+  async findOne(fields: FindOptionsWhere<User>): Promise<NullableType<User>> {
+    return await this.usersRepository.findOne({
       where: fields,
       relations: {
         address: true,

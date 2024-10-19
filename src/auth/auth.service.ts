@@ -197,7 +197,7 @@ export class AuthService {
     userJwtPayload: JwtPayloadType,
     notificationToken?: string,
   ): Promise<LoginResponseType> {
-    const user = await this.usersService.findOne({
+    const user = await this.usersService.findOneOrFail({
       id: userJwtPayload.id,
     });
     if (notificationToken) {
