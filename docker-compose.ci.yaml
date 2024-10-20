@@ -59,7 +59,7 @@ services:
       - traefikNetwork
       - linkbookServerNetwork
     volumes:
-      - ./uploads:/app/uploads
+      - uploads:/app/uploads
       - "~/shared_vps/traefik/certs:/letsencrypt"
 networks:
   traefikNetwork:
