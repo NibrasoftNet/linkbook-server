@@ -3,6 +3,7 @@ import { RoleSeedService } from './role/role-seed.service';
 import { SeedModule } from './seed.module';
 import { StatusSeedService } from './status/status-seed.service';
 import { UserSeedService } from './user/user-seed.service';
+import { CommunitySeedService } from './community/community-seed.service';
 
 const runSeed = async () => {
   const app = await NestFactory.create(SeedModule);
@@ -14,6 +15,7 @@ const runSeed = async () => {
     await app.get(RoleSeedService).run();
     await app.get(StatusSeedService).run();
     await app.get(UserSeedService).run();
+    await app.get(CommunitySeedService).run();
     console.log('All seed services have been run.');
   } else {
     // If an argument is provided, run the specific seed service
@@ -30,9 +32,13 @@ const runSeed = async () => {
         await app.get(UserSeedService).run();
         console.log('UserSeedService has been run.');
         break;
+      case 'community':
+        await app.get(CommunitySeedService).run();
+        console.log('CommunitySeedService has been run.');
+        break;
       default:
         console.log(
-          'Please specify a valid seed service: role, status, or user.',
+          'Please specify a valid seed service: role, status, user or community.',
         );
     }
   }

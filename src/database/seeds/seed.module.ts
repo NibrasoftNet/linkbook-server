@@ -10,8 +10,11 @@ import { StatusSeedModule } from './status/status-seed.module';
 import { AddressSeedModule } from './address/address-seed.module';
 import { UserSeedModule } from './user/user-seed.module';
 
+import { CommunitySeedModule } from './community/community-seed.module';
+
 @Module({
   imports: [
+    CommunitySeedModule,
     AddressSeedModule,
     RoleSeedModule,
     StatusSeedModule,

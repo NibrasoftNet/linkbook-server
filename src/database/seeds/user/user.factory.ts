@@ -44,6 +44,8 @@ export class UserFactory {
       name: 'Admin',
     } as Role;
     return {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       email: faker.internet.email().toLowerCase(),
       password: 'H@mza12345',
       role: faker.helpers.arrayElement<Role>([userRole, adminRole]),
