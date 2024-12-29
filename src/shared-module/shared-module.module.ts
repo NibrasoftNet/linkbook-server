@@ -31,6 +31,10 @@ import { AllConfigType } from 'src/config/config.type';
           s3: () => {
             const s3 = new S3Client({
               region: configService.get('file.awsS3Region', { infer: true }),
+              forcePathStyle: true,
+              endpoint: configService.getOrThrow('file.awsS3Endpoint', {
+                infer: true,
+              }),
               credentials: {
                 accessKeyId: configService.getOrThrow('file.accessKeyId', {
                   infer: true,
@@ -47,7 +51,6 @@ import { AllConfigType } from 'src/config/config.type';
               bucket: configService.getOrThrow('file.awsDefaultS3Bucket', {
                 infer: true,
               }),
-              acl: 'public-read',
               contentType: multerS3.AUTO_CONTENT_TYPE,
               key: (request, file, callback) => {
                 callback(
