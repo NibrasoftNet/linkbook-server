@@ -20,8 +20,6 @@ import { InjectMapper, MapInterceptor } from 'automapper-nestjs';
 import { Mapper } from 'automapper-core';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../roles/roles.guard';
-import { SearchHistory } from '../search-history/entities/search-history.entity';
-import { SearchHistoryDto } from '../search-history/dto/search-history.dto';
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { ApiPaginationQuery, Paginate, PaginateQuery } from 'nestjs-paginate';
@@ -40,7 +38,7 @@ export class TestimonialsController {
   ) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @UseInterceptors(MapInterceptor(SearchHistory, SearchHistoryDto))
+  @UseInterceptors(MapInterceptor(Testimonial, TestimonialDto))
   @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.STOREADMIN)
   @HttpCode(HttpStatus.CREATED)
   @Post()
@@ -56,7 +54,7 @@ export class TestimonialsController {
 
   @ApiPaginationQuery(testimonialPaginationConfig)
   @UseInterceptors(
-    MapInterceptor(SearchHistory, SearchHistoryDto, { isArray: true }),
+    MapInterceptor(Testimonial, TestimonialDto, { isArray: true }),
   )
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -72,7 +70,7 @@ export class TestimonialsController {
     );
   }
 
-  @UseInterceptors(MapInterceptor(SearchHistory, SearchHistoryDto))
+  @UseInterceptors(MapInterceptor(Testimonial, TestimonialDto))
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -81,7 +79,7 @@ export class TestimonialsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.STOREADMIN)
-  @UseInterceptors(MapInterceptor(SearchHistory, SearchHistoryDto))
+  @UseInterceptors(MapInterceptor(Testimonial, TestimonialDto))
   @HttpCode(HttpStatus.OK)
   @Patch(':id')
   async update(

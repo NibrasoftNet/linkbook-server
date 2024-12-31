@@ -23,11 +23,7 @@ import { AuthTwitterModule } from './auth-twitter/auth-twitter.module';
 import { AuthAppleModule } from './auth-apple/auth-apple.module';
 import facebookConfig from './auth-facebook/config/facebook.config';
 import googleConfig from './auth-google/config/google.config';
-import twitterConfig from './auth-twitter/config/twitter.config';
 import appleConfig from './auth-apple/config/apple.config';
-import googleGenerativeAIConfig from './utils/google-generative-ai/google-generative-ai.config';
-import openAiConfig from './utils/open-ai/open-ai.config';
-import oxylabsConfig from './search-history/config/search-products.config';
 import databaseConfig from './database/config/database.config';
 import authConfig from './auth/config/auth.config';
 import appConfig from './config/app.config';
@@ -41,10 +37,7 @@ import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { StoreAdminModule } from './store-admin/store-admin.module';
 import { IsNotUsedByOthers } from './utils/validators/is-not-used-by-others';
-import { SearchHistoryModule } from './search-history/search-history.module';
-import { GoogleGenerativeAIModule } from './utils/google-generative-ai/google-generative-ai.module';
 import { AwsS3Module } from './utils/aws-s3/aws-s3.module';
-import { OpenAiModule } from './utils/open-ai/open-ai.module';
 import { SwapModule } from './swap/swap.module';
 import { DonationModule } from './donation/donation.module';
 import { ApplicantToDonationModule } from './applicant-to-donation/applicant-to-donation.module';
@@ -73,11 +66,7 @@ import { ApplicantToCommunityModule } from './applicant-to-community/applicant-t
         fileConfig,
         facebookConfig,
         googleConfig,
-        twitterConfig,
         appleConfig,
-        googleGenerativeAIConfig,
-        openAiConfig,
-        oxylabsConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -170,9 +159,6 @@ import { ApplicantToCommunityModule } from './applicant-to-community/applicant-t
     ProductModule,
     CategoryModule,
     StoreAdminModule,
-    SearchHistoryModule,
-    GoogleGenerativeAIModule,
-    OpenAiModule,
     AwsS3Module,
     SwapModule,
     DonationModule,
